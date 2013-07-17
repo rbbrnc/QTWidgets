@@ -64,8 +64,10 @@ void QSlideSwitch::setOffText(const QString &text)
 // Overloaded paint event to draw the actual state.
 void QSlideSwitch::paintEvent(QPaintEvent *)
 {
+//	qDebug() << __func__ << m_dragInProgress;
+
 	QPainter painter(this);
-	painter.save();
+//	painter.save();
 
 	painter.setRenderHint(QPainter::Antialiasing);
 	painter.setRenderHint(QPainter::TextAntialiasing);
@@ -105,13 +107,11 @@ void QSlideSwitch::paintEvent(QPaintEvent *)
 		painter.drawText(m_text_rect, Qt::AlignVCenter, m_text_off);
 	}
 
-
 	// Render knob
 	painter.setBrush(m_knobBrush);
 	painter.setPen(QPen(Qt::black));
 	painter.drawRoundedRect(knobRect(), 8, 8);
-
-	painter.restore();
+//	painter.restore();
 }
 
 // Calculates the possible QSlideSwitch visible rect over aspect ratio.

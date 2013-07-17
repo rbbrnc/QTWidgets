@@ -16,19 +16,14 @@ class MainWindow : public QMainWindow
 		~MainWindow();
 
 	private slots:
-		void onOpen();
-		void on_playButton_clicked();
-		void on_pauseButton_clicked();
-		void on_stopButton_clicked();
-		void on_saveFrameButton_clicked();
-		void on_frameSlider_valueChanged(int val);
-
-		void onFrameChanged(int frame);
-
-		void onEditCutList();
-
-		void onEnableSelection(bool enable);
+		void onEnableCutSelection(bool enable);
 		void onCutSelection();
+		void on_hSlider_valueChanged(int val);
+		void on_vSlider_valueChanged(int val);
+
+		void on_invertedCheckBox_toggled(bool checked);
+		void on_ticksCheckBox_toggled(bool checked);
+		void on_trackingCheckBox_toggled(bool checked);
 
 	private:
 		Ui::MainWindow *ui;

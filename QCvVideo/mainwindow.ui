@@ -39,7 +39,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QSlider" name="frameSlider">
+     <widget class="QSelectionSlider" name="frameSlider">
       <property name="tracking">
        <bool>false</bool>
       </property>
@@ -55,6 +55,9 @@
       </property>
       <item>
        <widget class="QPushButton" name="playButton">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string>Play</string>
         </property>
@@ -62,6 +65,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="pauseButton">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string>Pause</string>
         </property>
@@ -69,6 +75,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="stopButton">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string>Stop</string>
         </property>
@@ -76,6 +85,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="saveFrameButton">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string>Save</string>
         </property>
@@ -99,12 +111,15 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSaveFrame"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
     <addaction name="actionEditCutList"/>
+    <addaction name="actionEnableSelection"/>
+    <addaction name="actionCutSelection"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -114,17 +129,49 @@
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionEditCutList">
    <property name="text">
     <string>Edit Cut List</string>
    </property>
+  </action>
+  <action name="actionSaveFrame">
+   <property name="text">
+    <string>Save Frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionEnableSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Selection</string>
+   </property>
    <property name="shortcut">
     <string>F3</string>
    </property>
   </action>
+  <action name="actionCutSelection">
+   <property name="text">
+    <string>Cut Selection</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QSelectionSlider</class>
+   <extends>QSlider</extends>
+   <header>QSelectionSlider.h</header>
+  </customwidget>
   <customwidget>
    <class>QCvVideo</class>
    <extends>QWidget</extends>
