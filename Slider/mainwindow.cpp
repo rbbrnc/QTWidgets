@@ -10,10 +10,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->frameSlider->setRange(0, 245);
-	ui->frameSlider->setTracking(false);
+	ui->vSlider->setRange(0, 100);
+	ui->vSlider->setTracking(false);
+	ui->vSlider->setInvertedAppearance(false);
+	ui->vSlider->setValue(0);
+	ui->vSlider->setTickPosition(QSlider::NoTicks);
 
-	//connect(ui->actionEnableCutSelection, SIGNAL(triggered(bool)), this, SLOT(onEnableCutSelection(bool)));
+	ui->hSlider->setRange(0, 100);
+	ui->hSlider->setTracking(false);
+	ui->hSlider->setInvertedAppearance(false);
+	ui->hSlider->setValue(0);
+	ui->hSlider->setTickPosition(QSlider::NoTicks);
+
 	connect(ui->actionEnableCutSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableCutSelection(bool)));
 	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
 }
@@ -23,19 +31,47 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::on_frameSlider_valueChanged(int val)
+void MainWindow::on_hSlider_valueChanged(int val)
 {
-//	qDebug() << __func__ << val;
-	ui->framePosLabel->setText(QString::number(val));
+	ui->hSliderPosLabel->setText(QString::number(val));
+}
+
+void MainWindow::on_vSlider_valueChanged(int val)
+{
+	ui->vSliderPosLabel->setText(QString::number(val));
+}
+
+void MainWindow::on_invertedCheckBox_toggled(bool checked)
+{
+	ui->hSlider->setInvertedAppearance(checked);
+	ui->vSlider->setInvertedAppearance(checked);
+}
+
+void MainWindow::on_ticksCheckBox_toggled(bool checked)
+{
+	if (checked) {
+		ui->hSlider->setTickPosition(QSlider::TicksBothSides);
+		ui->vSlider->setTickPosition(QSlider::TicksBothSides);
+	} else {
+		ui->hSlider->setTickPosition(QSlider::NoTicks);
+		ui->vSlider->setTickPosition(QSlider::NoTicks);
+	}
+}
+
+void MainWindow::on_trackingCheckBox_toggled(bool checked)
+{
+	ui->vSlider->setTracking(checked);
+	ui->hSlider->setTracking(checked);
 }
 
 void MainWindow::onEnableCutSelection(bool enable)
 {
-	ui->frameSlider->enableSelection(enable);
-	ui->horizontalSlider->enableSelection(enable);
+	ui->vSlider->enableSelection(enable);
+	ui->hSlider->enableSelection(enable);
 }
 
 void MainWindow::onCutSelection()
 {
-	qDebug() << ui->frameSlider->selection();
+	qDebug() << "VSliderSel:" << ui->vSlider->selection();
+	qDebug() << "HSliderSel:" << ui->hSlider->selection();
 }

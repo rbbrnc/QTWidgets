@@ -2,15 +2,10 @@ TEMPLATE = app
 TARGET =
 INCLUDEPATH += .
 
-# Input
-HEADERS += \
-	mainwindow.h \
-	slider.h
+include($$PWD/QSelectionSlider.pri)
 
-FORMS   += \
-	mainwindow.ui \
+HEADERS += mainwindow.h
+SOURCES += main.cpp mainwindow.cpp
+FORMS   += mainwindow.ui
 
-SOURCES += \
-	main.cpp \
-	mainwindow.cpp \
-	slider.cpp \
+

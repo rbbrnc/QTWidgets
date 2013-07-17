@@ -18,7 +18,12 @@ class MainWindow : public QMainWindow
 	private slots:
 		void onEnableCutSelection(bool enable);
 		void onCutSelection();
-		void on_frameSlider_valueChanged(int val);
+		void on_hSlider_valueChanged(int val);
+		void on_vSlider_valueChanged(int val);
+
+		void on_invertedCheckBox_toggled(bool checked);
+		void on_ticksCheckBox_toggled(bool checked);
+		void on_trackingCheckBox_toggled(bool checked);
 
 	private:
 		Ui::MainWindow *ui;

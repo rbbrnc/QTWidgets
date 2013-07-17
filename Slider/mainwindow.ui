@@ -13,14 +13,28 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QVideoSlider" name="horizontalSlider">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+     <widget class="QCheckBox" name="ticksCheckBox">
+      <property name="text">
+       <string>Ticks</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="framePosLabel">
+     <widget class="QCheckBox" name="invertedCheckBox">
+      <property name="text">
+       <string>Inverted</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="trackingCheckBox">
+      <property name="text">
+       <string>Tracking</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="hSliderPosLabel">
       <property name="text">
        <string>TextLabel</string>
       </property>
@@ -30,12 +44,32 @@
      </widget>
     </item>
     <item>
-     <widget class="QVideoSlider" name="frameSlider">
+     <widget class="QSelectionSlider" name="hSlider">
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksBothSides</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSelectionSlider" name="vSlider">
       <property name="tracking">
        <bool>false</bool>
       </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="vSliderPosLabel">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -50,12 +84,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionOpen"/>
-   </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
@@ -63,10 +91,8 @@
     <addaction name="actionEnableCutSelection"/>
     <addaction name="actionCutSelection"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
@@ -97,9 +123,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVideoSlider</class>
+   <class>QSelectionSlider</class>
    <extends>QSlider</extends>
-   <header>slider.h</header>
+   <header>QSelectionSlider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
