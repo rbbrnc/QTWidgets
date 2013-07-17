@@ -273,3 +273,8 @@ QHash<int, int> QCvVideo::cutList() const
 {
 	return m_cutList;
 }
+
+void QCvVideo::addSelection(QPair<int, int> selection)
+{
+	m_cutList[selection.first] = selection.second;
+}

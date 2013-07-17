@@ -27,6 +27,8 @@ class QCvVideo : public QWidget
 		void setCutList(QHash<int, int> cutList);
 		QHash<int, int> cutList() const;
 
+		void addSelection(QPair<int, int> selection);
+
 	protected:
 		virtual void paintEvent(QPaintEvent *event);
 		virtual void resizeEvent(QResizeEvent *event);

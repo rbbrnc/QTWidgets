@@ -14,10 +14,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->frameSlider->setRange(0, 0);
 	ui->frameSlider->setTracking(false);
+	ui->framePosLabel->setText("0");
 
 	connect(ui->actionOpen,  SIGNAL(triggered()), this, SLOT(onOpen()));
 	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->videoWidget, SIGNAL(frameChanged(int)), this, SLOT(onFrameChanged(int)));
+
+	connect(ui->actionEnableSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableSelection(bool)));
+	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
 }
 
 MainWindow::~MainWindow()
@@ -79,4 +83,15 @@ void MainWindow::onEditCutList()
 	ui->videoWidget->setCutList(dlg.list());
 
 	qDebug() << __func__ << ui->videoWidget->cutList();
+}
+
+void MainWindow::onEnableSelection(bool enable)
+{
+	ui->frameSlider->enableSelection(enable);
+}
+
+void MainWindow::onCutSelection()
+{
+	qDebug() << "SliderSel:" << ui->frameSlider->selection();
+	ui->videoWidget->addSelection(ui->frameSlider->selection());
 }

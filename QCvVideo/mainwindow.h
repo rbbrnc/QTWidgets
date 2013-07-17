@@ -27,6 +27,9 @@ class MainWindow : public QMainWindow
 
 		void onEditCutList();
 
+		void onEnableSelection(bool enable);
+		void onCutSelection();
+
 	private:
 		Ui::MainWindow *ui;
 };

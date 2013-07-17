@@ -1,3 +1,3 @@
 INCLUDEPATH += $$PWD
-HEADERS += QSelectionSlider.h
-SOURCES += QSelectionSlider.cpp
+HEADERS += $$PWD/QSelectionSlider.h
+SOURCES += $$PWD/QSelectionSlider.cpp
