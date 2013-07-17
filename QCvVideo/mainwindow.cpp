@@ -38,7 +38,11 @@ void MainWindow::onOpen()
 
 void MainWindow::on_playButton_clicked()
 {
-	ui->videoWidget->play();
+	if (ui->videoWidget->isPlaying()) {
+		ui->videoWidget->pause();
+	} else {
+		ui->videoWidget->play();
+	}
 }
 
 void MainWindow::on_pauseButton_clicked()
