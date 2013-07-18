@@ -61,11 +61,12 @@ void MainWindow::onOpen()
 
 	m_currentFile.clear();
 
+	QDir::setCurrent(QFileInfo(file).absolutePath());
+
 	if (ui->videoWidget->open(file)) {
 		m_currentFile = file;
 		enableVideoControls(true);
 		enableFrameControls(true);
-	//	ui->framePosLabel->setText("0");
 		ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
 		ui->frameSlider->setValue(0);
 	} else {
