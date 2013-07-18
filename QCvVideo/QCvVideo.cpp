@@ -210,6 +210,10 @@ void QCvVideo::getFrame()
 
 void QCvVideo::updateFrame()
 {
+	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	if (m_cutList.contains(pos)) {
+		m_capture->set(CV_CAP_PROP_POS_FRAMES, m_cutList.value(pos));
+	}
 	getFrame();
 	emit frameChanged(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 }
