@@ -31,6 +31,7 @@ class QCvVideo : public QWidget
 		QHash<int, int> cutList() const;
 
 		void addSelection(QPair<int, int> selection);
+		void clearSelection();
 
 	protected:
 		virtual void paintEvent(QPaintEvent *event);
@@ -47,7 +48,7 @@ class QCvVideo : public QWidget
 		void updateFrame();
 		void play();
 		void pause();
-		void goToFrame(int n);
+		int  goToFrame(int n);
 		void seekFrame(int increment);
 
 	private:

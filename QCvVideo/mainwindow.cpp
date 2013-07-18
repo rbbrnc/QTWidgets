@@ -65,8 +65,9 @@ void MainWindow::onOpen()
 		m_currentFile = file;
 		enableVideoControls(true);
 		enableFrameControls(true);
-		ui->framePosLabel->setText("0");
+	//	ui->framePosLabel->setText("0");
 		ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
+		ui->frameSlider->setValue(0);
 	} else {
 		enableVideoControls(false);
 		enableFrameControls(false);
@@ -104,8 +105,13 @@ void MainWindow::on_saveFrameButton_clicked()
 void MainWindow::on_frameSlider_valueChanged(int val)
 {
 	if (!ui->videoWidget->isPlaying()) {
-		ui->videoWidget->goToFrame(val);
-		ui->framePosLabel->setText(QString::number(val));
+		int newPos = ui->videoWidget->goToFrame(val);
+		if (newPos != val) {
+			// frame is into the cut list!
+			ui->frameSlider->setValue(newPos);
+			return;
+		}
+		ui->framePosLabel->setText(QString::number(newPos));
 	}
 }
 
