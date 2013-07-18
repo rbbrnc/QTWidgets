@@ -34,6 +34,7 @@ class QCvVideo : public QWidget
 		virtual void resizeEvent(QResizeEvent *event);
 
 	private:
+		void getFrame();
 		void drawFrame(QPainter &painter);
 
 	signals:
@@ -43,7 +44,6 @@ class QCvVideo : public QWidget
 		void updateFrame();
 		void play();
 		void pause();
-		void stop();
 		void saveCurrentFrame();
 		void goToFrame(int n);
 		void seekFrame(int increment);

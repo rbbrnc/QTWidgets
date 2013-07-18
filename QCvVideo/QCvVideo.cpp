@@ -39,7 +39,6 @@ bool QCvVideo::isPlaying() const
 	return m_timer->isActive();
 }
 
-
 bool QCvVideo::open(int device)
 {
 	if (m_capture) {
@@ -101,7 +100,9 @@ bool QCvVideo::open(const QString &fileName)
 	}
 	m_image = new QImage(w, h, QImage::Format_RGB888);
 
-	qDebug() << "size:" << w << "x" << h << "FPS:" << fps << "Timer Interval:" << m_timer->interval() << "ms";
+	qDebug() << "size:" << w << "x" << h
+		 << "FPS:" << fps 
+		 << "Timer Interval:" << m_timer->interval() << "ms";
 
 	return true;
 }
@@ -168,20 +169,12 @@ void QCvVideo::play()
 
 void QCvVideo::pause()
 {
-	if (m_timer->isActive()) {
+	if (m_capture) {
 		m_timer->stop();
-	} else {
-		m_timer->start();
 	}
 }
 
-void QCvVideo::stop()
-{
-	m_timer->stop();
-	goToFrame(0);
-}
-
-void QCvVideo::updateFrame()
+void QCvVideo::getFrame()
 {
 	cv::Mat frame;
 	if (!m_capture->read(frame)) {
@@ -203,9 +196,12 @@ void QCvVideo::updateFrame()
 
 	// Trigger paint event to redraw the window
 	update();
+}
 
-	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
-	emit frameChanged(pos);
+void QCvVideo::updateFrame()
+{
+	getFrame();
+	emit frameChanged(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 }
 
 void QCvVideo::goToFrame(int n)
@@ -223,7 +219,7 @@ void QCvVideo::goToFrame(int n)
 		pos = n;
 	}
 	m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
-	updateFrame();
+	getFrame();
 }
 
 void QCvVideo::seekFrame(int increment)
@@ -277,4 +273,5 @@ QHash<int, int> QCvVideo::cutList() const
 void QCvVideo::addSelection(QPair<int, int> selection)
 {
 	m_cutList[selection.first] = selection.second;
+	qDebug() << m_cutList;
 }

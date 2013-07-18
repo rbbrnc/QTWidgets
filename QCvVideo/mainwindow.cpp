@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->playButton->setEnabled(false);
+	ui->stopButton->setEnabled(false);
+	ui->saveFrameButton->setEnabled(false);
+
 	ui->frameSlider->setRange(0, 0);
 	ui->frameSlider->setTracking(false);
 	ui->framePosLabel->setText("0");
@@ -34,45 +38,55 @@ void MainWindow::onOpen()
 	QString file = QFileDialog::getOpenFileName(this, tr("Open Video"),
 						    QDir::currentPath(),
 						    tr("Files (*.*)"));
-	ui->videoWidget->open(file);
+	if (file.isEmpty()) {
+		return;
+	}
 
-	ui->framePosLabel->setText("0");
-	ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
+	if (ui->videoWidget->open(file)) {
+		ui->framePosLabel->setText("0");
+		ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
+		ui->playButton->setEnabled(true);
+		ui->stopButton->setEnabled(true);
+		ui->saveFrameButton->setEnabled(true);
+	} else {
+		ui->playButton->setEnabled(false);
+		ui->stopButton->setEnabled(false);
+		ui->saveFrameButton->setEnabled(false);
+	}
 }
 
 void MainWindow::on_playButton_clicked()
 {
-	ui->videoWidget->play();
-}
-
-void MainWindow::on_pauseButton_clicked()
-{
-	ui->videoWidget->pause();
+	if (ui->videoWidget->isPlaying()) {
+		ui->videoWidget->pause();
+	} else {
+		ui->videoWidget->play();
+	}
 }
 
 void MainWindow::on_stopButton_clicked()
 {
-	ui->videoWidget->stop();
-}
-
-void MainWindow::on_frameSlider_valueChanged(int val)
-{
-//	qDebug() << __func__ << val;
-	ui->framePosLabel->setText(QString::number(val));
-	if (!ui->videoWidget->isPlaying()) {
-		ui->videoWidget->goToFrame(val);
-	}
-}
-
-void MainWindow::onFrameChanged(int frame)
-{
-//	qDebug() << __func__ << frame;
-	ui->frameSlider->setSliderPosition(frame);
+	ui->videoWidget->pause();
+	ui->frameSlider->setValue(0);
 }
 
 void MainWindow::on_saveFrameButton_clicked()
 {
 	ui->videoWidget->saveCurrentFrame();
+}
+
+void MainWindow::on_frameSlider_valueChanged(int val)
+{
+	if (!ui->videoWidget->isPlaying()) {
+		ui->videoWidget->goToFrame(val);
+		ui->framePosLabel->setText(QString::number(val));
+	}
+}
+
+void MainWindow::onFrameChanged(int frame)
+{
+	ui->framePosLabel->setText(QString::number(frame));
+	ui->frameSlider->setValue(frame);
 }
 
 void MainWindow::onEditCutList()

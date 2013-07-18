@@ -18,7 +18,6 @@ class MainWindow : public QMainWindow
 	private slots:
 		void onOpen();
 		void on_playButton_clicked();
-		void on_pauseButton_clicked();
 		void on_stopButton_clicked();
 		void on_saveFrameButton_clicked();
 		void on_frameSlider_valueChanged(int val);
