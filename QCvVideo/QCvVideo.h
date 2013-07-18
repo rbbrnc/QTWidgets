@@ -21,6 +21,9 @@ class QCvVideo : public QWidget
 		bool open(int device);
 		bool open(const QString &fileName);
 
+		bool saveCurrentFrame(const QString &fileName);
+
+		int currentFrame() const;
 		int frameCount() const;
 		bool isPlaying() const;
 
@@ -44,7 +47,6 @@ class QCvVideo : public QWidget
 		void updateFrame();
 		void play();
 		void pause();
-		void saveCurrentFrame();
 		void goToFrame(int n);
 		void seekFrame(int increment);
 

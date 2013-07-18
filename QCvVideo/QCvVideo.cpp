@@ -34,6 +34,15 @@ int QCvVideo::frameCount() const
 	return m_frameCount;
 }
 
+int QCvVideo::currentFrame() const
+{
+	if (m_capture) {
+		return m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	} else {
+		return -1;
+	}
+}
+
 bool QCvVideo::isPlaying() const
 {
 	return m_timer->isActive();
@@ -233,8 +242,12 @@ void QCvVideo::seekFrame(int increment)
 	goToFrame(pos);
 }
 
-void QCvVideo::saveCurrentFrame()
+bool QCvVideo::saveCurrentFrame(const QString &fileName)
 {
+	if (fileName.isEmpty()) {
+		return false;
+	}
+
 	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
 
 	if (pos > m_frameCount) {
@@ -251,12 +264,13 @@ void QCvVideo::saveCurrentFrame()
 
 	cv::Mat frameToSave;
 	if (!m_capture->read(frameToSave)) {
-		return;
+		return false;
 	}
 
-	QString fn = QString("frame%1.png").arg(pos);
+	// point back to saved frame!
+	m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
 
-	cv::imwrite(fn.toLatin1().constData(), frameToSave);
+	return cv::imwrite(fileName.toLatin1().constData(), frameToSave);
 }
 
 void QCvVideo::setCutList(QHash<int, int> cutList)
