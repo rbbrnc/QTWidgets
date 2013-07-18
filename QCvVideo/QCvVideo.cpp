@@ -34,11 +34,19 @@ int QCvVideo::frameCount() const
 	return m_frameCount;
 }
 
+int QCvVideo::currentFrame() const
+{
+	if (m_capture) {
+		return m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	} else {
+		return -1;
+	}
+}
+
 bool QCvVideo::isPlaying() const
 {
 	return m_timer->isActive();
 }
-
 
 bool QCvVideo::open(int device)
 {
@@ -56,7 +64,7 @@ bool QCvVideo::open(int device)
 bool QCvVideo::open(const QString &fileName)
 {
 	m_frameCount = 0;
-	m_cutList.clear();
+	clearSelection();  // Clear current cutList
 
 	if (fileName.isEmpty()) {
 	        return false;
@@ -101,7 +109,10 @@ bool QCvVideo::open(const QString &fileName)
 	}
 	m_image = new QImage(w, h, QImage::Format_RGB888);
 
-	qDebug() << "size:" << w << "x" << h << "FPS:" << fps << "Timer Interval:" << m_timer->interval() << "ms";
+	qDebug() << "size:" << w << "x" << h
+		 << "FPS:" << fps
+		 << "Frames:" << m_frameCount
+		 << "Timer Interval:" << m_timer->interval() << "ms";
 
 	return true;
 }
@@ -168,20 +179,12 @@ void QCvVideo::play()
 
 void QCvVideo::pause()
 {
-	if (m_timer->isActive()) {
+	if (m_capture) {
 		m_timer->stop();
-	} else {
-		m_timer->start();
 	}
 }
 
-void QCvVideo::stop()
-{
-	m_timer->stop();
-	goToFrame(0);
-}
-
-void QCvVideo::updateFrame()
+void QCvVideo::getFrame()
 {
 	cv::Mat frame;
 	if (!m_capture->read(frame)) {
@@ -203,15 +206,23 @@ void QCvVideo::updateFrame()
 
 	// Trigger paint event to redraw the window
 	update();
-
-	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
-	emit frameChanged(pos);
 }
 
-void QCvVideo::goToFrame(int n)
+void QCvVideo::updateFrame()
+{
+	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	if (m_cutList.contains(pos)) {
+		m_capture->set(CV_CAP_PROP_POS_FRAMES, m_cutList.value(pos));
+	}
+	getFrame();
+	emit frameChanged(m_capture->get(CV_CAP_PROP_POS_FRAMES));
+}
+
+// return the new frame number!
+int QCvVideo::goToFrame(int n)
 {
 	if (!m_capture) {
-		return;
+		return 0;
 	}
 
 	int pos;
@@ -222,8 +233,27 @@ void QCvVideo::goToFrame(int n)
 	} else {
 		pos = n;
 	}
-	m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
-	updateFrame();
+
+	// Check if frame is into the cut list
+	if (m_cutList.contains(pos)) {
+		int newPos = m_cutList.value(pos);
+		if (newPos > pos) {
+			// Forward seek
+			newPos++;
+		} else {
+			// Backward seek
+			newPos--;
+		}
+		if (newPos < m_frameCount) {
+			pos = newPos;
+		} else {
+			pos--;
+		}
+	} else {
+		m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
+		getFrame();
+	}
+	return pos;
 }
 
 void QCvVideo::seekFrame(int increment)
@@ -237,8 +267,12 @@ void QCvVideo::seekFrame(int increment)
 	goToFrame(pos);
 }
 
-void QCvVideo::saveCurrentFrame()
+bool QCvVideo::saveCurrentFrame(const QString &fileName)
 {
+	if (fileName.isEmpty()) {
+		return false;
+	}
+
 	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
 
 	if (pos > m_frameCount) {
@@ -255,12 +289,13 @@ void QCvVideo::saveCurrentFrame()
 
 	cv::Mat frameToSave;
 	if (!m_capture->read(frameToSave)) {
-		return;
+		return false;
 	}
 
-	QString fn = QString("frame%1.png").arg(pos);
+	// point back to saved frame!
+	m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
 
-	cv::imwrite(fn.toLatin1().constData(), frameToSave);
+	return cv::imwrite(fileName.toLatin1().constData(), frameToSave);
 }
 
 void QCvVideo::setCutList(QHash<int, int> cutList)
@@ -276,5 +311,17 @@ QHash<int, int> QCvVideo::cutList() const
 
 void QCvVideo::addSelection(QPair<int, int> selection)
 {
-	m_cutList[selection.first] = selection.second;
+	// Put the two frame number in the cut list.
+	// For forward seek we check the first and for backward seek we check
+	// the second!
+	//
+	m_cutList[selection.first]  = selection.second;
+	m_cutList[selection.second] = selection.first;
+
+	qDebug() << m_cutList;
+}
+
+void QCvVideo::clearSelection()
+{
+	m_cutList.clear();
 }

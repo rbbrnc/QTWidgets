@@ -12,14 +12,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->frameSlider->setRange(0, 0);
 	ui->frameSlider->setTracking(false);
-	ui->framePosLabel->setText("0");
+	ui->framePosLabel->setText("");
+	enableVideoControls(false);
+	enableFrameControls(false);
 
-	connect(ui->actionOpen,  SIGNAL(triggered()), this, SLOT(onOpen()));
-	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->videoWidget, SIGNAL(frameChanged(int)), this, SLOT(onFrameChanged(int)));
 
+	connect(ui->actionOpen,  SIGNAL(triggered()), this, SLOT(onOpen()));
+	connect(ui->actionSaveFrame, SIGNAL(triggered()), this, SLOT(on_saveFrameButton_clicked()));
+	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->actionEnableSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableSelection(bool)));
 	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
 }
@@ -29,54 +31,94 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+void MainWindow::enableFrameControls(bool enable)
+{
+	ui->saveFrameButton->setEnabled(enable);
+	ui->actionSaveFrame->setEnabled(enable);
+
+	ui->actionEnableSelection->setEnabled(enable);
+
+	ui->actionCutSelection->setEnabled(enable);
+	ui->actionEditCutList->setEnabled(enable);
+}
+
+void MainWindow::enableVideoControls(bool enable)
+{
+	ui->frameSlider->setEnabled(enable);
+	ui->playButton->setEnabled(enable);
+	ui->stopButton->setEnabled(enable);
+
+}
+
 void MainWindow::onOpen()
 {
 	QString file = QFileDialog::getOpenFileName(this, tr("Open Video"),
 						    QDir::currentPath(),
 						    tr("Files (*.*)"));
-	ui->videoWidget->open(file);
+	if (file.isEmpty()) {
+		return;
+	}
 
-	ui->framePosLabel->setText("0");
-	ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
+	m_currentFile.clear();
+
+	if (ui->videoWidget->open(file)) {
+		m_currentFile = file;
+		enableVideoControls(true);
+		enableFrameControls(true);
+	//	ui->framePosLabel->setText("0");
+		ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
+		ui->frameSlider->setValue(0);
+	} else {
+		enableVideoControls(false);
+		enableFrameControls(false);
+	}
 }
 
 void MainWindow::on_playButton_clicked()
 {
 	if (ui->videoWidget->isPlaying()) {
 		ui->videoWidget->pause();
+		enableFrameControls(true);
 	} else {
+		enableFrameControls(false);
 		ui->videoWidget->play();
 	}
 }
 
-void MainWindow::on_pauseButton_clicked()
-{
-	ui->videoWidget->pause();
-}
-
 void MainWindow::on_stopButton_clicked()
 {
-	ui->videoWidget->stop();
+	ui->videoWidget->pause();
+	ui->frameSlider->setValue(0);
+}
+
+void MainWindow::on_saveFrameButton_clicked()
+{
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Save Current Frame"),
+		QString("%1_frame%2.png").arg(m_currentFile)
+					 .arg(ui->videoWidget->currentFrame()));
+	if (!fileName.isEmpty()) {
+		ui->videoWidget->saveCurrentFrame(fileName);
+	}
 }
 
 void MainWindow::on_frameSlider_valueChanged(int val)
 {
-//	qDebug() << __func__ << val;
-	ui->framePosLabel->setText(QString::number(val));
 	if (!ui->videoWidget->isPlaying()) {
-		ui->videoWidget->goToFrame(val);
+		int newPos = ui->videoWidget->goToFrame(val);
+		if (newPos != val) {
+			// frame is into the cut list!
+			ui->frameSlider->setValue(newPos);
+			return;
+		}
+		ui->framePosLabel->setText(QString::number(newPos));
 	}
 }
 
 void MainWindow::onFrameChanged(int frame)
 {
-//	qDebug() << __func__ << frame;
-	ui->frameSlider->setSliderPosition(frame);
-}
-
-void MainWindow::on_saveFrameButton_clicked()
-{
-	ui->videoWidget->saveCurrentFrame();
+	ui->framePosLabel->setText(QString::number(frame));
+	ui->frameSlider->setValue(frame);
 }
 
 void MainWindow::onEditCutList()

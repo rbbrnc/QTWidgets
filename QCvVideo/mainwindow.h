@@ -15,10 +15,13 @@ class MainWindow : public QMainWindow
 		explicit MainWindow(QWidget *parent = 0);
 		~MainWindow();
 
+	private:
+		void enableFrameControls(bool enable);
+		void enableVideoControls(bool enable);
+
 	private slots:
 		void onOpen();
 		void on_playButton_clicked();
-		void on_pauseButton_clicked();
 		void on_stopButton_clicked();
 		void on_saveFrameButton_clicked();
 		void on_frameSlider_valueChanged(int val);
@@ -32,6 +35,8 @@ class MainWindow : public QMainWindow
 
 	private:
 		Ui::MainWindow *ui;
+
+		QString m_currentFile;
 };
 
 #endif

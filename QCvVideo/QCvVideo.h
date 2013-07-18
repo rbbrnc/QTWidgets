@@ -21,6 +21,9 @@ class QCvVideo : public QWidget
 		bool open(int device);
 		bool open(const QString &fileName);
 
+		bool saveCurrentFrame(const QString &fileName);
+
+		int currentFrame() const;
 		int frameCount() const;
 		bool isPlaying() const;
 
@@ -28,12 +31,14 @@ class QCvVideo : public QWidget
 		QHash<int, int> cutList() const;
 
 		void addSelection(QPair<int, int> selection);
+		void clearSelection();
 
 	protected:
 		virtual void paintEvent(QPaintEvent *event);
 		virtual void resizeEvent(QResizeEvent *event);
 
 	private:
+		void getFrame();
 		void drawFrame(QPainter &painter);
 
 	signals:
@@ -43,9 +48,7 @@ class QCvVideo : public QWidget
 		void updateFrame();
 		void play();
 		void pause();
-		void stop();
-		void saveCurrentFrame();
-		void goToFrame(int n);
+		int  goToFrame(int n);
 		void seekFrame(int increment);
 
 	private:
