@@ -65,7 +65,6 @@ void QSelectionSlider::paintEvent(QPaintEvent *event)
 		QStyleOptionSlider opt;
 		initStyleOption(&opt);
 
-
 		QRect handle = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
 		QRect groove = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
 

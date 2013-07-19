@@ -189,7 +189,7 @@ void QCvVideo::getFrame()
 {
 	cv::Mat frame;
 	if (!m_capture->read(frame)) {
-		if (m_capture->get(CV_CAP_PROP_POS_FRAMES) < m_frameCount) {
+		if (m_capture->get(CV_CAP_PROP_POS_FRAMES) < m_frameCount - 1) {
 			qDebug() << "Fail to read frame!";
 		} else {
 			qDebug() << "End.";

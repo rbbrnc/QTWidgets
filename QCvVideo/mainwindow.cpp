@@ -67,7 +67,7 @@ void MainWindow::onOpen()
 		m_currentFile = file;
 		enableVideoControls(true);
 		enableFrameControls(true);
-		ui->frameSlider->setRange(0, ui->videoWidget->frameCount());
+		ui->frameSlider->setRange(0, ui->videoWidget->frameCount() - 1);
 		ui->frameSlider->setValue(0);
 		ui->statusbar->showMessage(m_currentFile);
 	} else {
