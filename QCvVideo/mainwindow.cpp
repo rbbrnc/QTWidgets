@@ -125,9 +125,9 @@ void MainWindow::onFrameChanged(int frame)
 void MainWindow::onEditCutList()
 {
 	CutListDialog dlg(ui->videoWidget->cutList(), ui->videoWidget->frameCount(), this);
-	dlg.exec();
-
-	ui->videoWidget->setCutList(dlg.list());
+	if (QDialog::Accepted == dlg.exec()) {
+		ui->videoWidget->setCutList(dlg.list());
+	}
 
 	qDebug() << __func__ << ui->videoWidget->cutList();
 }

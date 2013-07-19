@@ -301,7 +301,7 @@ bool QCvVideo::saveCurrentFrame(const QString &fileName)
 void QCvVideo::setCutList(QHash<int, int> cutList)
 {
 	m_cutList = cutList;
-	qDebug() << m_cutList;
+	qDebug() << __PRETTY_FUNCTION__ << m_cutList;
 }
 
 QHash<int, int> QCvVideo::cutList() const
