@@ -108,6 +108,7 @@ bool QCvVideo::open(const QString &fileName)
 		m_image = 0;
 	}
 	m_image = new QImage(w, h, QImage::Format_RGB888);
+	update();
 
 	qDebug() << "size:" << w << "x" << h
 		 << "FPS:" << fps
