@@ -22,6 +22,7 @@ class QCvVideo : public QWidget
 		bool open(const QString &fileName);
 
 		bool saveCurrentFrame(const QString &fileName);
+		bool saveVideo(const QString &fileName);
 
 		int currentFrame() const;
 		int frameCount() const;

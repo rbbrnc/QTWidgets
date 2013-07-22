@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionOpen,  SIGNAL(triggered()), this, SLOT(onOpen()));
 	connect(ui->actionSaveFrame, SIGNAL(triggered()), this, SLOT(on_saveFrameButton_clicked()));
+	connect(ui->actionSaveVideo, SIGNAL(triggered()), this, SLOT(onSaveVideo()));
 	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->actionEnableSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableSelection(bool)));
 	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
@@ -47,7 +48,7 @@ void MainWindow::enableVideoControls(bool enable)
 	ui->frameSlider->setEnabled(enable);
 	ui->playButton->setEnabled(enable);
 	ui->stopButton->setEnabled(enable);
-
+	ui->actionSaveVideo->setEnabled(enable);
 }
 
 void MainWindow::onOpen()
@@ -142,4 +143,14 @@ void MainWindow::onCutSelection()
 {
 	qDebug() << "SliderSel:" << ui->frameSlider->selection();
 	ui->videoWidget->addSelection(ui->frameSlider->selection());
+}
+
+void MainWindow::onSaveVideo()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Video"),
+		QString("%1_edited.avi").arg(m_currentFile));
+
+	if (!fileName.isEmpty()) {
+		ui->videoWidget->saveVideo(fileName);
+	}
 }

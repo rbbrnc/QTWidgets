@@ -115,6 +115,9 @@ bool QCvVideo::open(const QString &fileName)
 		 << "Frames:" << m_frameCount
 		 << "Timer Interval:" << m_timer->interval() << "ms";
 
+	// Set Capture Stream at start position;
+	//m_capture->set(CV_CAP_PROP_POS_FRAMES, 0);
+
 	return true;
 }
 
@@ -212,6 +215,7 @@ void QCvVideo::getFrame()
 void QCvVideo::updateFrame()
 {
 	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
+
 	if (m_cutList.contains(pos)) {
 		m_capture->set(CV_CAP_PROP_POS_FRAMES, m_cutList.value(pos));
 	}
@@ -270,6 +274,10 @@ void QCvVideo::seekFrame(int increment)
 
 bool QCvVideo::saveCurrentFrame(const QString &fileName)
 {
+	if (!m_capture) {
+		return false;
+	}
+
 	if (fileName.isEmpty()) {
 		return false;
 	}
@@ -325,4 +333,105 @@ void QCvVideo::addSelection(QPair<int, int> selection)
 void QCvVideo::clearSelection()
 {
 	m_cutList.clear();
+}
+
+
+bool QCvVideo::saveVideo(const QString &fileName)
+{
+	if (!m_capture) {
+		return false;
+	}
+
+	if (fileName.isEmpty()) {
+		return false;
+	}
+
+	double fps = m_capture->get(CV_CAP_PROP_FPS);
+
+	int width  = m_capture->get(CV_CAP_PROP_FRAME_WIDTH);
+	int height = m_capture->get(CV_CAP_PROP_FRAME_HEIGHT);
+
+	cv::Size size(width, height);
+
+
+//    CV_FOURCC('P','I','M','1') = MPEG-1 codec
+//    CV_FOURCC('M','J','P','G') = motion-jpeg codec (does not work well)
+//    CV_FOURCC('M','P','4','2') = MPEG-4.2 codec
+//    CV_FOURCC('D','I','V','3') = MPEG-4.3 codec
+//    CV_FOURCC('D','I','V','X') = MPEG-4 codec
+//    CV_FOURCC('U','2','6','3') = H263 codec
+//    CV_FOURCC('I','2','6','3') = H263I codec
+//    CV_FOURCC('F','L','V','1') = FLV1 codec
+
+// Windows only:
+//
+// -1 = allows the user to choose the codec from a dialog at runtime
+// 0 = creates an uncompressed AVI file (the filename must have a .avi extension)
+
+	//
+	// FOURCC 4-character code of codec
+	//
+	//int fourcc = -1;
+	//
+	// AVI 'DIB ' RGB(A)   Uncompressed RGB, 24 or 32 bit
+	//int fourcc = CV_FOURCC('D','I','B',' ');
+
+	//AVI 'I420' RAW I420 Uncompressed YUV, 4:2:0 chroma subsampled
+	//int fourcc = CV_FOURCC('I','4','2','0');
+
+	//AVI 'IYUV' RAW I420 identical to I420
+	int fourcc = CV_FOURCC('I','Y','U','V');
+
+	//int fourcc = CV_FOURCC('D','I','V','X');
+
+	cv::VideoWriter out(fileName.toLatin1().constData(), fourcc, fps, size, true);
+	if (!out.isOpened()) {
+		qDebug() << __PRETTY_FUNCTION__ << "Error: could not open video file";
+		out.release();
+		return false;
+	}
+
+	qDebug() << "FOURCC:" << fourcc
+		 << "FPS:" << fps
+		 << "Size:" << width << "," << height;
+
+	m_capture->set(CV_CAP_PROP_POS_FRAMES, 0);
+	cv::Mat frame;
+	int pos = -1;
+	while (pos < m_frameCount) {
+		pos++;
+		// Check if frame is into the cut list
+		if (m_cutList.contains(pos)) {
+			int newPos = m_cutList.value(pos);
+			if (newPos > pos) {
+				// Forward seek
+				newPos++;
+				qDebug() << "Seek to:" << newPos;
+			} else {
+				// Backward seek (smomething wrong!!)
+				continue;
+			}
+			if (newPos < m_frameCount) {
+				pos = newPos;
+				qDebug() << "pos=:" << newPos;
+			} else {
+				//cut to the end
+				break;
+			}
+		}
+		m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
+		qDebug() << "save pos=:" << pos;
+		if (!m_capture->read(frame)) {
+			if (m_capture->get(CV_CAP_PROP_POS_FRAMES) < m_frameCount - 1) {
+				qDebug() << "Fail to read frame!";
+			} else {
+				qDebug() << "End.";
+			}
+			break;
+		}
+		out.write(frame);
+	}
+
+	out.release();
+	return true;
 }
