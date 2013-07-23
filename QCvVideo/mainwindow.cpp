@@ -77,8 +77,6 @@ void MainWindow::onOpen()
 		QTime tm(0, 0, 0, 0);
 		tm = tm.addMSecs(ui->videoWidget->duration());
 		m_duration = tm.toString("hh:mm:ss:zzz");
-
-		qDebug() << m_duration << tm;
 		updateLabels(0);
 	} else {
 		enableVideoControls(false);

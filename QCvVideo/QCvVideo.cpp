@@ -45,7 +45,6 @@ QString QCvVideo::codec() const
 	codec += (fourcc & 0x00FF0000) >> 16;
 	codec += (fourcc & 0xFF000000) >> 24;
 
-//	qDebug() << __PRETTY_FUNCTION__ << fourcc << codec;
 	return codec;
 }
 
@@ -62,7 +61,7 @@ int QCvVideo::frameCount() const
 int QCvVideo::currentFrame() const
 {
 	if (m_capture) {
-		return m_capture->get(CV_CAP_PROP_POS_FRAMES);
+		return static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 	} else {
 		return -1;
 	}
@@ -71,7 +70,7 @@ int QCvVideo::currentFrame() const
 int QCvVideo::currentMsecs() const
 {
 	if (m_capture) {
-		return m_capture->get(CV_CAP_PROP_POS_MSEC);
+		return static_cast<int>(m_capture->get(CV_CAP_PROP_POS_MSEC));
 	} else {
 		return -1;
 	}
@@ -116,12 +115,12 @@ bool QCvVideo::open(const QString &fileName)
 	        return false;
 	}
 
-	m_frameCount = m_capture->get(CV_CAP_PROP_FRAME_COUNT);
+	m_frameCount = static_cast<int>(m_capture->get(CV_CAP_PROP_FRAME_COUNT));
 
 	// Retrieve the width/height of the video.
 	// If not possible, then use the current size of the window.
-	int w = m_capture->get(CV_CAP_PROP_FRAME_WIDTH);
-	int h = m_capture->get(CV_CAP_PROP_FRAME_HEIGHT);
+	int w = static_cast<int>(m_capture->get(CV_CAP_PROP_FRAME_WIDTH));
+	int h = static_cast<int>(m_capture->get(CV_CAP_PROP_FRAME_HEIGHT));
 	if (!w || !h) {
 		w = width();
 		h = height();
@@ -233,7 +232,7 @@ void QCvVideo::getFrame()
 {
 	cv::Mat frame;
 	if (!m_capture->read(frame)) {
-		if (m_capture->get(CV_CAP_PROP_POS_FRAMES) < m_frameCount - 1) {
+		if (static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES)) < m_frameCount - 1) {
 			qDebug() << "Fail to read frame!";
 		} else {
 			qDebug() << "End.";
@@ -255,13 +254,13 @@ void QCvVideo::getFrame()
 
 void QCvVideo::updateFrame()
 {
-	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	int pos = static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 
 	if (m_cutList.contains(pos)) {
 		m_capture->set(CV_CAP_PROP_POS_FRAMES, m_cutList.value(pos));
 	}
 	getFrame();
-	emit frameChanged(m_capture->get(CV_CAP_PROP_POS_FRAMES));
+	emit frameChanged(static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES)));
 }
 
 // return the new frame number!
@@ -304,7 +303,7 @@ int QCvVideo::goToFrame(int n)
 
 void QCvVideo::seekFrame(int increment)
 {
-	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	int pos = static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 
 	pos += increment;
 	if (increment < 0) {
@@ -323,7 +322,7 @@ bool QCvVideo::saveCurrentFrame(const QString &fileName)
 		return false;
 	}
 
-	int pos = m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	int pos = static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 
 	if (pos > m_frameCount) {
 		pos = m_frameCount;
@@ -387,21 +386,12 @@ bool QCvVideo::saveVideo(const QString &fileName)
 		return false;
 	}
 
-
-	// Current fourcc
-	int ex = static_cast<int>(m_capture->get(CV_CAP_PROP_FOURCC));
-
-	char EXT[] = {ex & 0XFF , (ex & 0XFF00) >> 8,(ex & 0XFF0000) >> 16,(ex & 0XFF000000) >> 24, 0};
-
-	qDebug() << __PRETTY_FUNCTION__ << ex << EXT;
-
 	double fps = m_capture->get(CV_CAP_PROP_FPS);
 
-	int width  = m_capture->get(CV_CAP_PROP_FRAME_WIDTH);
-	int height = m_capture->get(CV_CAP_PROP_FRAME_HEIGHT);
+	int width  = static_cast<int>(m_capture->get(CV_CAP_PROP_FRAME_WIDTH));
+	int height = static_cast<int>(m_capture->get(CV_CAP_PROP_FRAME_HEIGHT));
 
 	cv::Size size(width, height);
-
 
 //    CV_FOURCC('P','I','M','1') = MPEG-1 codec
 //    CV_FOURCC('M','J','P','G') = motion-jpeg codec (does not work well)
@@ -462,14 +452,13 @@ bool QCvVideo::saveVideo(const QString &fileName)
 			}
 			if (newPos < m_frameCount) {
 				pos = newPos;
-				qDebug() << "pos=:" << newPos;
+				//qDebug() << "pos=:" << newPos;
 			} else {
 				//cut to the end
 				break;
 			}
 		}
 		m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
-		qDebug() << "save pos=:" << pos;
 		if (!m_capture->read(frame)) {
 			if (m_capture->get(CV_CAP_PROP_POS_FRAMES) < m_frameCount - 1) {
 				qDebug() << "Fail to read frame!";
