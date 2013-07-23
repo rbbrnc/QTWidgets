@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
 		void enableFrameControls(bool enable);
 		void enableVideoControls(bool enable);
 
+		void updateLabels(int pos);
+
 	private slots:
 		void onOpen();
 		void onSaveVideo();
@@ -38,6 +40,9 @@ class MainWindow : public QMainWindow
 		Ui::MainWindow *ui;
 
 		QString m_currentFile;
+
+		int m_frameCount;
+		QString m_duration;
 };
 
 #endif

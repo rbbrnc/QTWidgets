@@ -24,7 +24,10 @@ class QCvVideo : public QWidget
 		bool saveCurrentFrame(const QString &fileName);
 		bool saveVideo(const QString &fileName);
 
+		QString codec() const;
 		int currentFrame() const;
+		int currentMsecs() const;
+		int duration() const; // msecs
 		int frameCount() const;
 		bool isPlaying() const;
 
@@ -59,6 +62,8 @@ class QCvVideo : public QWidget
 		Qt::AspectRatioMode m_aspectRatioMode;
 
 		int m_frameCount;
+		int m_fps;
+		int m_duration;
 
 		QHash<int, int> m_cutList;
 };

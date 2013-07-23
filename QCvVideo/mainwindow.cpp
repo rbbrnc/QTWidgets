@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QTime>
 #include <QDebug>
 
 #include "cutlistdialog.h"
@@ -13,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->frameSlider->setTracking(false);
-	ui->framePosLabel->setText("");
+
 	enableVideoControls(false);
 	enableFrameControls(false);
 
@@ -71,6 +72,14 @@ void MainWindow::onOpen()
 		ui->frameSlider->setRange(0, ui->videoWidget->frameCount() - 1);
 		ui->frameSlider->setValue(0);
 		ui->statusbar->showMessage(m_currentFile);
+
+		m_frameCount = ui->videoWidget->frameCount();
+		QTime tm(0, 0, 0, 0);
+		tm = tm.addMSecs(ui->videoWidget->duration());
+		m_duration = tm.toString("hh:mm:ss:zzz");
+
+		qDebug() << m_duration << tm;
+		updateLabels(0);
 	} else {
 		enableVideoControls(false);
 		enableFrameControls(false);
@@ -105,6 +114,18 @@ void MainWindow::on_saveFrameButton_clicked()
 	}
 }
 
+void MainWindow::updateLabels(int pos)
+{
+	QTime tm(0, 0, 0, 0);
+	tm = tm.addMSecs(ui->videoWidget->currentMsecs());
+	ui->framesLabel->setText(QString("%1/%2")
+		.arg(pos)
+		.arg(m_frameCount));
+	ui->timesLabel->setText(QString("%1 / %2")
+		.arg(tm.toString("hh:mm:ss:zzz"))
+		.arg(m_duration));
+}
+
 void MainWindow::on_frameSlider_valueChanged(int val)
 {
 	if (!ui->videoWidget->isPlaying()) {
@@ -114,14 +135,14 @@ void MainWindow::on_frameSlider_valueChanged(int val)
 			ui->frameSlider->setValue(newPos);
 			return;
 		}
-		ui->framePosLabel->setText(QString::number(newPos));
+		updateLabels(newPos);
 	}
 }
 
 void MainWindow::onFrameChanged(int frame)
 {
-	ui->framePosLabel->setText(QString::number(frame));
 	ui->frameSlider->setValue(frame);
+	updateLabels(frame);
 }
 
 void MainWindow::onEditCutList()
@@ -130,7 +151,6 @@ void MainWindow::onEditCutList()
 	if (QDialog::Accepted == dlg.exec()) {
 		ui->videoWidget->setCutList(dlg.list());
 	}
-
 	qDebug() << __func__ << ui->videoWidget->cutList();
 }
 

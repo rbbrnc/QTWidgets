@@ -4,6 +4,7 @@
 #include "QCvVideo.h"
 
 #include <QPainter>
+#include <QTime>
 #include <QDebug>
 
 QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
@@ -11,7 +12,8 @@ QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
 	m_capture(0),
 	m_image(0),
 	m_aspectRatioMode(aspectRatioMode),
-	m_frameCount(0)
+	m_frameCount(0),
+	m_duration(0)
 {
 	m_timer = new QTimer();
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updateFrame()));
@@ -29,6 +31,29 @@ QCvVideo::~QCvVideo()
 	}
 }
 
+QString QCvVideo::codec() const
+{
+	if (!m_capture) {
+		return QString();
+	}
+
+	int fourcc = static_cast<int>(m_capture->get(CV_CAP_PROP_FOURCC));
+	QString codec;
+
+	codec +=  fourcc & 0x000000FF;
+	codec += (fourcc & 0x0000FF00) >> 8;
+	codec += (fourcc & 0x00FF0000) >> 16;
+	codec += (fourcc & 0xFF000000) >> 24;
+
+//	qDebug() << __PRETTY_FUNCTION__ << fourcc << codec;
+	return codec;
+}
+
+int QCvVideo::duration() const
+{
+	return m_duration;
+}
+
 int QCvVideo::frameCount() const
 {
 	return m_frameCount;
@@ -38,6 +63,15 @@ int QCvVideo::currentFrame() const
 {
 	if (m_capture) {
 		return m_capture->get(CV_CAP_PROP_POS_FRAMES);
+	} else {
+		return -1;
+	}
+}
+
+int QCvVideo::currentMsecs() const
+{
+	if (m_capture) {
+		return m_capture->get(CV_CAP_PROP_POS_MSEC);
 	} else {
 		return -1;
 	}
@@ -64,6 +98,7 @@ bool QCvVideo::open(int device)
 bool QCvVideo::open(const QString &fileName)
 {
 	m_frameCount = 0;
+	m_duration = 0;
 	clearSelection();  // Clear current cutList
 
 	if (fileName.isEmpty()) {
@@ -93,14 +128,17 @@ bool QCvVideo::open(const QString &fileName)
 	}
 
 	// Retrieve fps from the video. If not available, default will be 25
-	int fps = m_capture->get(CV_CAP_PROP_FPS);
+	m_fps = m_capture->get(CV_CAP_PROP_FPS);
 
-	if (!fps) {
-		fps = 25;
+	if (!m_fps) {
+		m_fps = 25;
 	}
 
+	// duration in msecs
+	m_duration = (m_frameCount * 1000)/m_fps;
+
 	// Set FPS playback
-	m_timer->setInterval(1000 / fps);
+	m_timer->setInterval(1000 / m_fps);
 
 	// m_image is created according to video dimensions
 	if (m_image) {
@@ -110,13 +148,16 @@ bool QCvVideo::open(const QString &fileName)
 	m_image = new QImage(w, h, QImage::Format_RGB888);
 	update();
 
-	qDebug() << "size:" << w << "x" << h
-		 << "FPS:" << fps
+	QTime tm(0, 0, 0, 0);
+	tm = tm.addMSecs(duration());
+	qDebug() << QString("Codec: %1 Size:%2x%3 - %4 fps")
+			.arg(codec())
+			.arg(w)
+			.arg(h)
+			.arg(m_fps)
 		 << "Frames:" << m_frameCount
+		 << "Duration:" << tm.toString("hh:mm:ss:zzz")
 		 << "Timer Interval:" << m_timer->interval() << "ms";
-
-	// Set Capture Stream at start position;
-	//m_capture->set(CV_CAP_PROP_POS_FRAMES, 0);
 
 	return true;
 }
@@ -345,6 +386,14 @@ bool QCvVideo::saveVideo(const QString &fileName)
 	if (fileName.isEmpty()) {
 		return false;
 	}
+
+
+	// Current fourcc
+	int ex = static_cast<int>(m_capture->get(CV_CAP_PROP_FOURCC));
+
+	char EXT[] = {ex & 0XFF , (ex & 0XFF00) >> 8,(ex & 0XFF0000) >> 16,(ex & 0XFF000000) >> 24, 0};
+
+	qDebug() << __PRETTY_FUNCTION__ << ex << EXT;
 
 	double fps = m_capture->get(CV_CAP_PROP_FPS);
 
