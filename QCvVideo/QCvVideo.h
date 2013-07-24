@@ -6,6 +6,8 @@
 #include <QImage>
 #include <QResizeEvent>
 
+#include "filters.h"
+
 namespace cv {
 	class VideoCapture;
 }
@@ -66,6 +68,10 @@ class QCvVideo : public QWidget
 		int m_duration;
 
 		QHash<int, int> m_cutList;
+
+		QList<Filter *> m_filters;
+
+
 };
 
 #endif

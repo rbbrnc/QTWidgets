@@ -9,7 +9,8 @@ include($$SLIDERPATH/QSelectionSlider.pri)
 
 HEADERS += \
 	mainwindow.h \
-	cutlistdialog.h
+	cutlistdialog.h \
+	filters.h
 
 FORMS   += \
 	mainwindow.ui \
@@ -18,4 +19,5 @@ FORMS   += \
 SOURCES += \
 	main.cpp \
 	mainwindow.cpp \
-	cutlistdialog.cpp
+	cutlistdialog.cpp \
+	filters.cpp

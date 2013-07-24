@@ -15,6 +15,11 @@ QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
 	m_frameCount(0),
 	m_duration(0)
 {
+
+	Filter *f = Filter::create(Filter::Flip);
+	f->setParameter(0, true);
+	m_filters.append(f);
+
 	m_timer = new QTimer();
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updateFrame()));
 }
@@ -239,6 +244,10 @@ void QCvVideo::getFrame()
 		}
 		m_timer->stop();
 		return;
+	}
+
+	for (int i = 0; i < m_filters.count(); i++) {
+		m_filters[i]->apply(&frame, &frame);
 	}
 
 	// OpenCV uses BGR order, QT uses RGB order!!
