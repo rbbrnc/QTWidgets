@@ -33,7 +33,7 @@ void FlipFilter::apply(cv::Mat *in, cv::Mat *out)
 		qDebug() << "F-Filter not applied!";
 		return;
 	}
-	qDebug() << "Apply F-Filter v:" << m_vertical;
+//	qDebug() << "Apply F-Filter v:" << m_vertical;
 
 	cv::flip(*in, *out, (m_vertical) ? 0 : 1);
 }
