@@ -99,6 +99,7 @@ void MainWindow::on_stopButton_clicked()
 {
 	ui->videoWidget->pause();
 	ui->frameSlider->setValue(0);
+	enableFrameControls(true);
 }
 
 void MainWindow::on_saveFrameButton_clicked()
