@@ -24,6 +24,8 @@ class MainWindow : public QMainWindow
 	private slots:
 		void onOpen();
 		void onSaveVideo();
+		void onInfo();
+
 		void on_playButton_clicked();
 		void on_stopButton_clicked();
 		void on_saveFrameButton_clicked();

@@ -161,6 +161,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSaveFrame"/>
     <addaction name="actionSaveVideo"/>
+    <addaction name="actionInfo"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -241,6 +242,11 @@
    </property>
    <property name="text">
     <string>Flip Vertical</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="text">
+    <string>Info</string>
    </property>
   </action>
  </widget>

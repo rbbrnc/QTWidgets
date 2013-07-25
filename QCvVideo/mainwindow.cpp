@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
-#include <QInputDialog>
+#include <QMessageBox>
 #include <QTime>
 #include <QDebug>
 
@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionOpen,  SIGNAL(triggered()), this, SLOT(onOpen()));
 	connect(ui->actionSaveFrame, SIGNAL(triggered()), this, SLOT(on_saveFrameButton_clicked()));
 	connect(ui->actionSaveVideo, SIGNAL(triggered()), this, SLOT(onSaveVideo()));
+	connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(onInfo()));
+
 	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->actionEnableSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableSelection(bool)));
 	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
@@ -181,7 +183,6 @@ void MainWindow::onSaveVideo()
 
 void MainWindow::onFlipVertical(bool enable)
 {
-	qDebug() << __func__ << enable;
 	if (enable) {
 		Filter *f = Filter::create(Filter::FlipVertical);
 		ui->videoWidget->addFilter(f);
@@ -192,11 +193,19 @@ void MainWindow::onFlipVertical(bool enable)
 
 void MainWindow::onFlipHorizontal(bool enable)
 {
-	qDebug() << __func__ << enable;
 	if (enable) {
 		Filter *f = Filter::create(Filter::FlipHorizontal);
 		ui->videoWidget->addFilter(f);
 	} else {
 		ui->videoWidget->removeFilter(Filter::FlipHorizontal);
 	}
+}
+
+void MainWindow::onInfo()
+{
+	QString txt = QString("File:\n%1\nCodec: %2")
+			.arg(m_currentFile)
+			.arg(ui->videoWidget->codec());
+
+	QMessageBox::about(this, "Info", txt);
 }
