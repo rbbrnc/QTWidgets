@@ -81,7 +81,7 @@ void CutListDialog::on_removeButton_clicked()
 	qSort(sel);
 	for (int i = sel.count() - 1; i >= 0; i--) {
 		int row = sel.at(i).row();
-		qDebug() << "Remove row:" << row;
+		//qDebug() << "Remove row:" << row;
 		m_model->removeRow(row);
 	}
 }
@@ -96,24 +96,56 @@ void CutListDialog::loadCutList()
 
 	QFile file(fileName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qDebug() << "Open Error!";
+		ui->logTextEdit->appendPlainText(QString("Error opening \'%1\'").arg(fileName));
 		return;
 	}
 
 	QHash<int, int> cutList;
+	int commentIdx;
+	bool startOk;
+	bool endOk;
+	int startMark;
+	int endMark;
 
 	int i = -1;
 	QTextStream in(&file);
 	while (!in.atEnd()) {
 		i++;
 		QString line = in.readLine();
-		QStringList sl = line.split(';');
-		if (sl.count() != 2) {
-			qDebug() << QString("Invalid line [%1]: %2").arg(i).arg(line);
+
+		// Trim whitespaces
+		line = line.simplified();
+
+		// Skip empty line
+		if (line.isEmpty()) {
 			continue;
 		}
-		cutList.insert(sl.at(0).toInt(), sl.at(1).toInt());
-		cutList.insert(sl.at(1).toInt(), sl.at(0).toInt());
+
+		// Remove comments '#'
+		commentIdx = line.indexOf('#', 0);
+		if (commentIdx == 0) {
+			// Ignore full-line comment
+			continue;
+		} else if (commentIdx != -1) {
+			// Remove comment from commentIdx to EOL
+			line.truncate(commentIdx);
+		}
+
+		QStringList sl = line.split(';');
+		if (sl.count() != 2) {
+			ui->logTextEdit->appendPlainText(QString("Line %1 -- Invalid line \'%2\'").arg(i).arg(line));
+			continue;
+		}
+
+		startMark = sl.at(0).toInt(&startOk);
+		endMark   = sl.at(1).toInt(&endOk);
+
+		if ((!startOk) || (!endOk)) {
+			ui->logTextEdit->appendPlainText(QString("Line %1 -- Invalid data \'%2\'").arg(i).arg(line));
+		} else {
+			cutList.insert(startMark, endMark);
+			cutList.insert(endMark, startMark);
+		}
 	}
 
 	file.close();
@@ -123,7 +155,7 @@ void CutListDialog::loadCutList()
 	}
 	setupCutListModelView(cutList);
 
-	qDebug() << __PRETTY_FUNCTION__ << cutList;
+	//qDebug() << __PRETTY_FUNCTION__ << cutList;
 }
 
 void CutListDialog::saveCutList()
@@ -149,7 +181,7 @@ void CutListDialog::saveCutList()
 		end   = m_model->item(row, 1)->data(Qt::DisplayRole).toInt();
 
 		out << start << ';' << end << "\n";
-		qDebug() << QString("[%1] SAVE:").arg(row) << start << "," << end;
+//		qDebug() << QString("[%1] SAVE:").arg(row) << start << "," << end;
 	}
 
 	file.close();
