@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QTime>
 #include <QDebug>
 
@@ -26,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->actionEnableSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableSelection(bool)));
 	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
+
+	// Filter Actions
+	connect(ui->actionFlipHorizontal, SIGNAL(toggled(bool)), this, SLOT(onFlipHorizontal(bool)));
+	connect(ui->actionFlipVertical,   SIGNAL(toggled(bool)), this, SLOT(onFlipVertical(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -150,7 +155,7 @@ void MainWindow::onEditCutList()
 	if (QDialog::Accepted == dlg.exec()) {
 		ui->videoWidget->setCutList(dlg.list());
 	}
-	qDebug() << __func__ << ui->videoWidget->cutList();
+//	qDebug() << __func__ << ui->videoWidget->cutList();
 }
 
 void MainWindow::onEnableSelection(bool enable)
@@ -160,7 +165,7 @@ void MainWindow::onEnableSelection(bool enable)
 
 void MainWindow::onCutSelection()
 {
-	qDebug() << "SliderSel:" << ui->frameSlider->selection();
+//	qDebug() << "SliderSel:" << ui->frameSlider->selection();
 	ui->videoWidget->addSelection(ui->frameSlider->selection());
 }
 
@@ -171,5 +176,27 @@ void MainWindow::onSaveVideo()
 
 	if (!fileName.isEmpty()) {
 		ui->videoWidget->saveVideo(fileName);
+	}
+}
+
+void MainWindow::onFlipVertical(bool enable)
+{
+	qDebug() << __func__ << enable;
+	if (enable) {
+		Filter *f = Filter::create(Filter::FlipVertical);
+		ui->videoWidget->addFilter(f);
+	} else {
+		ui->videoWidget->removeFilter(Filter::FlipVertical);
+	}
+}
+
+void MainWindow::onFlipHorizontal(bool enable)
+{
+	qDebug() << __func__ << enable;
+	if (enable) {
+		Filter *f = Filter::create(Filter::FlipHorizontal);
+		ui->videoWidget->addFilter(f);
+	} else {
+		ui->videoWidget->removeFilter(Filter::FlipHorizontal);
 	}
 }

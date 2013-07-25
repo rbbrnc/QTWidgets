@@ -9,18 +9,24 @@ Filter *Filter::create(enum Filter::Type type)
 		return new RotateFilter();
 	case Filter::BrightnessContrast:
 		return new BCFilter();
-	case Filter::Flip:
-		return new FlipFilter();
-
+	case Filter::FlipHorizontal:
+		return new FlipFilter(FP::Horizontal);
+	case Filter::FlipVertical:
+		return new FlipFilter(FP::Vertical);
 	default:
 		return NULL;
 	}
 }
 
-FlipFilter::FlipFilter() :
-	m_vertical(false)
+FlipFilter::FlipFilter(enum FP::Orientation orientation)
 {
-	m_type = Filter::Flip;
+	if (orientation == FP::Horizontal) {
+		m_type = Filter::FlipHorizontal;
+		m_orientation = 1;
+	} else {
+		m_type = Filter::FlipVertical;
+		m_orientation = 0;
+	}
 }
 
 FlipFilter::~FlipFilter()
@@ -30,25 +36,24 @@ FlipFilter::~FlipFilter()
 void FlipFilter::apply(cv::Mat *in, cv::Mat *out)
 {
 	if (in->empty() || out->empty()) {
-		qDebug() << "F-Filter not applied!";
-		return;
+		qDebug() << QString("%1 Flip-Filter not applied!")
+				.arg((m_orientation) ? "Horizontal" : "Vertical");
+	} else {
+		cv::flip(*in, *out, m_orientation);
 	}
-//	qDebug() << "Apply F-Filter v:" << m_vertical;
-
-	cv::flip(*in, *out, (m_vertical) ? 0 : 1);
 }
 
-void FlipFilter::setParameter(int param, QVariant value)
+void FlipFilter::setParameter(enum Filter::Parameter param, QVariant value)
 {
-	if (param == 0) {
-		m_vertical = value.toBool();
+	if (Filter::Orientation == param) {
+		m_orientation = (value.toInt()) ? 1 : 0;
+		qDebug() << "Set F-Filter Orientation:" << m_orientation;
 	}
 }
 
 //
 // Rotation
 //
-
 RotateFilter::RotateFilter() :
 	m_ccw(false),
 	m_count(1)
@@ -71,9 +76,9 @@ void RotateFilter::apply(cv::Mat *in, cv::Mat *out)
 	cv::flip(in->t(), *out, (m_ccw) ? 0 : 1);
 }
 
-void RotateFilter::setParameter(int param, QVariant value)
+void RotateFilter::setParameter(enum Filter::Parameter param, QVariant value)
 {
-	if (param == 0) {
+	if (Filter::Angle == param) {
 		m_ccw = value.toBool();
 	}
 }
@@ -99,26 +104,25 @@ void BCFilter::apply(cv::Mat *in, cv::Mat *out)
 		qDebug() << "BC-Filter not applied!";
 		return;
 	}
-
-	qDebug() << "Apply BC-Filter B:" << m_brightness << "C:" << m_contrast;
-
 	in->convertTo(*out, -1, m_brightness, m_contrast);
 }
 
-void BCFilter::setParameter(int param, QVariant value)
+void BCFilter::setParameter(enum Filter::Parameter param, QVariant value)
 {
 	double v = value.toDouble();
 
-	if (param == 0) {
+	if (Filter::Contrast == param) {
 		if ((v < 0) || (v > 100)) {
 			return;
 		}
 		m_contrast = v;
-	} else if (param == 1) {
+		qDebug() << "Set BC-Filter Contrast:" << m_contrast;
+	} else if (Filter::Brightness == param) {
 		if ((v < 1.0) || (v > 3.0)) {
 			return;
 		}
 		m_brightness = v;
+		qDebug() << "Set BC-Filter Brightness:" << m_brightness;
 	}
 }
 

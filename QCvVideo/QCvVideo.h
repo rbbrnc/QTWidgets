@@ -39,6 +39,9 @@ class QCvVideo : public QWidget
 		void addSelection(QPair<int, int> selection);
 		void clearSelection();
 
+		void addFilter(Filter *f);
+		void removeFilter(enum Filter::Type ft);
+
 	protected:
 		virtual void paintEvent(QPaintEvent *event);
 		virtual void resizeEvent(QResizeEvent *event);

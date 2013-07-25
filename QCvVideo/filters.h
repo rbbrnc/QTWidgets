@@ -1,6 +1,13 @@
 #include <QDebug>
-
 #include <cv.h>
+
+// Filters Parameters
+namespace FP {
+	enum Orientation {
+		Horizontal = 0,
+		Vertical
+	};
+}
 
 class Filter
 {
@@ -8,7 +15,15 @@ class Filter
 		enum Type {
 			Rotation = 1,
 			BrightnessContrast,
-			Flip
+			FlipHorizontal,
+			FlipVertical
+		};
+
+		enum Parameter {
+			Orientation = 0,
+			Angle,
+			Brightness,
+			Contrast,
 		};
 
 		// The "Virtual Constructor"
@@ -21,7 +36,7 @@ class Filter
 
 		// Interface
 		virtual void apply(cv::Mat *in, cv::Mat *out) = 0;
-		virtual void setParameter(int param, QVariant value) = 0;
+		virtual void setParameter(enum Filter::Parameter param, QVariant value) = 0;
 
 	protected:
 		enum Filter::Type m_type;
@@ -30,14 +45,14 @@ class Filter
 class FlipFilter : public Filter
 {
 	public:
-		FlipFilter();
+		FlipFilter(enum FP::Orientation orientation);
 		~FlipFilter();
 
 		void apply(cv::Mat *in, cv::Mat *out);
-		void setParameter(int param, QVariant value);
+		void setParameter(enum Filter::Parameter param, QVariant value);
 
 	private:
-		bool m_vertical;
+		int m_orientation;
 };
 
 class RotateFilter : public Filter
@@ -47,7 +62,7 @@ class RotateFilter : public Filter
 		~RotateFilter();
 
 		void apply(cv::Mat *in, cv::Mat *out);
-		void setParameter(int param, QVariant value);
+		void setParameter(enum Filter::Parameter param, QVariant value);
 
 	private:
 		bool m_ccw;
@@ -61,7 +76,7 @@ class BCFilter : public Filter
 		~BCFilter();
 
 		void apply(cv::Mat *in, cv::Mat *out);
-		void setParameter(int param, QVariant value);
+		void setParameter(enum Filter::Parameter param, QVariant value);
 
 	private:
 		double m_contrast;	// 1.0 - 3.0

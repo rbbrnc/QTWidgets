@@ -15,16 +15,12 @@ QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
 	m_frameCount(0),
 	m_duration(0)
 {
-
-	Filter *f = Filter::create(Filter::Flip);
-	f->setParameter(0, true);
-	m_filters.append(f);
-
+/*
 	f = Filter::create(Filter::BrightnessContrast);
-	f->setParameter(1, 2.0);
-	f->setParameter(0, 50);
+	f->setParameter(Filter::Brightness, 1.0);
+	f->setParameter(Filter::Contrast, 0);
 	m_filters.append(f);
-
+*/
 	m_timer = new QTimer();
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updateFrame()));
 }
@@ -490,4 +486,24 @@ bool QCvVideo::saveVideo(const QString &fileName)
 
 	out.release();
 	return true;
+}
+
+
+void QCvVideo::addFilter(Filter *f)
+{
+	// If the same filter type is present, removeit before
+	// inseret the new one
+	removeFilter(f->type());
+	m_filters.append(f);
+}
+
+void QCvVideo::removeFilter(enum Filter::Type ft)
+{
+	for (int i = 0; i < m_filters.count(); i++) {
+		if (m_filters[i]->type() == ft) {
+			Filter *f = m_filters.takeAt(i);
+			delete f;
+		}
+	}
+
 }

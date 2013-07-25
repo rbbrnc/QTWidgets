@@ -36,6 +36,9 @@ class MainWindow : public QMainWindow
 		void onEnableSelection(bool enable);
 		void onCutSelection();
 
+		void onFlipHorizontal(bool enable);
+		void onFlipVertical(bool enable);
+
 	private:
 		Ui::MainWindow *ui;
 

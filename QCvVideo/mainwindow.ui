@@ -170,8 +170,16 @@
     <addaction name="actionEnableSelection"/>
     <addaction name="actionCutSelection"/>
    </widget>
+   <widget class="QMenu" name="menuFilters">
+    <property name="title">
+     <string>Filters</string>
+    </property>
+    <addaction name="actionFlipHorizontal"/>
+    <addaction name="actionFlipVertical"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuFilters"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
@@ -217,6 +225,22 @@
   <action name="actionSaveVideo">
    <property name="text">
     <string>Save Video</string>
+   </property>
+  </action>
+  <action name="actionFlipHorizontal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flip Horizontal</string>
+   </property>
+  </action>
+  <action name="actionFlipVertical">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flip Vertical</string>
    </property>
   </action>
  </widget>
