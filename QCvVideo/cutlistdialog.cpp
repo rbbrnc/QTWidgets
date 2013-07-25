@@ -30,6 +30,7 @@ void CutListDialog::setupCutListModelView(QHash<int, int> cutList)
 	m_model->setHeaderData(1, Qt::Horizontal, QObject::tr("End Frame"));
 
 	ui->tableView->setModel(m_model);
+	ui->tableView->setSortingEnabled(true);
 
 	int idx = 0;
 	QHashIterator<int, int> i(cutList);
