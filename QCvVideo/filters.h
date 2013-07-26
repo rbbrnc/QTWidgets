@@ -13,7 +13,9 @@ class Filter
 {
 	public:
 		enum Type {
-			Rotation = 1,
+			Rotation90CW = 1,
+			Rotation90CCW,
+			Rotation180,
 			BrightnessContrast,
 			FlipHorizontal,
 			FlipVertical
@@ -58,15 +60,14 @@ class FlipFilter : public Filter
 class RotateFilter : public Filter
 {
 	public:
-		RotateFilter();
+		RotateFilter(enum Filter::Type type);
 		~RotateFilter();
 
 		void apply(cv::Mat *in, cv::Mat *out);
 		void setParameter(enum Filter::Parameter param, QVariant value);
 
 	private:
-		bool m_ccw;
-		unsigned int m_count;
+		int m_cw;
 };
 
 class BCFilter : public Filter

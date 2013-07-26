@@ -50,6 +50,8 @@ class QCvVideo : public QWidget
 		void getFrame();
 		void drawFrame(QPainter &painter);
 
+		void applyFilters(cv::Mat &frame);
+
 	signals:
 		void frameChanged(int);
 

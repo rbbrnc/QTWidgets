@@ -5,8 +5,12 @@
 Filter *Filter::create(enum Filter::Type type)
 {
 	switch (type) {
-	case Filter::Rotation:
-		return new RotateFilter();
+	case Filter::Rotation90CW:
+		return new RotateFilter(Rotation90CW);
+	case Filter::Rotation90CCW:
+		return new RotateFilter(Rotation90CCW);
+	case Filter::Rotation180:
+		return new RotateFilter(Rotation180);
 	case Filter::BrightnessContrast:
 		return new BCFilter();
 	case Filter::FlipHorizontal:
@@ -14,6 +18,7 @@ Filter *Filter::create(enum Filter::Type type)
 	case Filter::FlipVertical:
 		return new FlipFilter(FP::Vertical);
 	default:
+		qDebug() << __PRETTY_FUNCTION__ << "Invalid Filter Type";
 		return NULL;
 	}
 }
@@ -54,11 +59,15 @@ void FlipFilter::setParameter(enum Filter::Parameter param, QVariant value)
 //
 // Rotation
 //
-RotateFilter::RotateFilter() :
-	m_ccw(false),
-	m_count(1)
+RotateFilter::RotateFilter(enum Filter::Type type)
 {
-	m_type = Filter::Rotation;
+	m_type = type;
+
+	if (m_type == Filter::Rotation90CCW) {
+		m_cw = 0;
+	} else {
+		m_cw = 1;
+	}
 }
 
 RotateFilter::~RotateFilter()
@@ -68,18 +77,23 @@ RotateFilter::~RotateFilter()
 void RotateFilter::apply(cv::Mat *in, cv::Mat *out)
 {
 	if (in->empty() || out->empty()) {
-		qDebug() << "R-Filter not applied!";
+		qDebug() << QString("%1 %2 Rotation-Filter not applied!")
+				.arg((m_type == Filter::Rotation180) ? 180 : 90)
+				.arg((m_cw) ? "CW" : "CCW");
 		return;
 	}
-	qDebug() << "Apply R-Filter ccw:" << m_ccw << "x" << m_count << " times";
 
-	cv::flip(in->t(), *out, (m_ccw) ? 0 : 1);
+	cv::flip(in->t(), *out, m_cw);
+
+	if (m_type == Filter::Rotation180) {
+		cv::flip(out->t(), *out, m_cw);
+	}
 }
 
 void RotateFilter::setParameter(enum Filter::Parameter param, QVariant value)
 {
 	if (Filter::Angle == param) {
-		m_ccw = value.toBool();
+		m_cw = (value.toInt()) ? 1 : 0;
 	}
 }
 

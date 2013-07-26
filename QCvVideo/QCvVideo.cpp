@@ -238,6 +238,27 @@ void QCvVideo::pause()
 	}
 }
 
+void QCvVideo::applyFilters(cv::Mat &frame)
+{
+	// Apply Filters
+	for (int i = 0; i < m_filters.count(); i++) {
+		m_filters[i]->apply(&frame, &frame);
+	}
+
+	// Set new image dimensions if changed.
+	if ((frame.size().width  != m_image->width()) ||
+	    (frame.size().height != m_image->height()))
+	{
+		if (m_image) {
+			delete m_image;
+			m_image = 0;
+		}
+		m_image = new QImage(frame.size().width,
+				     frame.size().height,
+				     QImage::Format_RGB888);
+	}
+}
+
 void QCvVideo::getFrame()
 {
 	cv::Mat frame;
@@ -251,9 +272,7 @@ void QCvVideo::getFrame()
 		return;
 	}
 
-	for (int i = 0; i < m_filters.count(); i++) {
-		m_filters[i]->apply(&frame, &frame);
-	}
+	applyFilters(frame);
 
 	// OpenCV uses BGR order, QT uses RGB order!!
 	cv::cvtColor(frame, frame, CV_BGR2RGB);
@@ -270,6 +289,7 @@ void QCvVideo::updateFrame()
 {
 	int pos = static_cast<int>(m_capture->get(CV_CAP_PROP_POS_FRAMES));
 
+	// Skip cutted frames.
 	if (m_cutList.contains(pos)) {
 		m_capture->set(CV_CAP_PROP_POS_FRAMES, m_cutList.value(pos));
 	}

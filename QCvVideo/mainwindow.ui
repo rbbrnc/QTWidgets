@@ -177,6 +177,9 @@
     </property>
     <addaction name="actionFlipHorizontal"/>
     <addaction name="actionFlipVertical"/>
+    <addaction name="actionRotate90cw"/>
+    <addaction name="actionRotate90ccw"/>
+    <addaction name="actionRotate180"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -228,14 +231,6 @@
     <string>Save Video</string>
    </property>
   </action>
-  <action name="actionFlipHorizontal">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Flip Horizontal</string>
-   </property>
-  </action>
   <action name="actionFlipVertical">
    <property name="checkable">
     <bool>true</bool>
@@ -247,6 +242,38 @@
   <action name="actionInfo">
    <property name="text">
     <string>Info</string>
+   </property>
+  </action>
+  <action name="actionRotate90cw">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate 90 CW</string>
+   </property>
+  </action>
+  <action name="actionRotate90ccw">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate 90 CCW</string>
+   </property>
+  </action>
+  <action name="actionFlipHorizontal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flip Horizontal</string>
+   </property>
+  </action>
+  <action name="actionRotate180">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate 180</string>
    </property>
   </action>
  </widget>

@@ -31,8 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionCutSelection, SIGNAL(triggered()), this, SLOT(onCutSelection()));
 
 	// Filter Actions
-	connect(ui->actionFlipHorizontal, SIGNAL(toggled(bool)), this, SLOT(onFlipHorizontal(bool)));
-	connect(ui->actionFlipVertical,   SIGNAL(toggled(bool)), this, SLOT(onFlipVertical(bool)));
+	connect(ui->actionRotate90cw,  SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
+	connect(ui->actionRotate90ccw, SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
+	connect(ui->actionRotate180, SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
+
+	connect(ui->actionFlipHorizontal, SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
+	connect(ui->actionFlipVertical,   SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -61,9 +65,8 @@ void MainWindow::enableVideoControls(bool enable)
 
 void MainWindow::onOpen()
 {
-	QString file = QFileDialog::getOpenFileName(this, tr("Open Video"),
-						    QDir::currentPath(),
-						    tr("Files (*.*)"));
+	QString file = QFileDialog::getOpenFileName(this, tr("Open Video"), QDir::currentPath());
+
 	if (file.isEmpty()) {
 		return;
 	}
@@ -157,7 +160,6 @@ void MainWindow::onEditCutList()
 	if (QDialog::Accepted == dlg.exec()) {
 		ui->videoWidget->setCutList(dlg.list());
 	}
-//	qDebug() << __func__ << ui->videoWidget->cutList();
 }
 
 void MainWindow::onEnableSelection(bool enable)
@@ -167,7 +169,6 @@ void MainWindow::onEnableSelection(bool enable)
 
 void MainWindow::onCutSelection()
 {
-//	qDebug() << "SliderSel:" << ui->frameSlider->selection();
 	ui->videoWidget->addSelection(ui->frameSlider->selection());
 }
 
@@ -181,26 +182,6 @@ void MainWindow::onSaveVideo()
 	}
 }
 
-void MainWindow::onFlipVertical(bool enable)
-{
-	if (enable) {
-		Filter *f = Filter::create(Filter::FlipVertical);
-		ui->videoWidget->addFilter(f);
-	} else {
-		ui->videoWidget->removeFilter(Filter::FlipVertical);
-	}
-}
-
-void MainWindow::onFlipHorizontal(bool enable)
-{
-	if (enable) {
-		Filter *f = Filter::create(Filter::FlipHorizontal);
-		ui->videoWidget->addFilter(f);
-	} else {
-		ui->videoWidget->removeFilter(Filter::FlipHorizontal);
-	}
-}
-
 void MainWindow::onInfo()
 {
 	QString txt = QString("File:\n%1\nCodec: %2")
@@ -208,4 +189,39 @@ void MainWindow::onInfo()
 			.arg(ui->videoWidget->codec());
 
 	QMessageBox::about(this, "Info", txt);
+}
+
+void MainWindow::onFilterToggled(bool enable)
+{
+	QAction *act = qobject_cast<QAction *>(sender());
+
+	enum Filter::Type filterType;
+
+	if (act == ui->actionRotate90cw) {
+		filterType = Filter::Rotation90CW;
+	} else if (act == ui->actionRotate90ccw) {
+		filterType = Filter::Rotation90CCW;
+	} else if (act == ui->actionRotate180) {
+		filterType = Filter::Rotation180;
+	} else if (act == ui->actionFlipHorizontal) {
+		filterType = Filter::FlipHorizontal;
+	} else if (act == ui->actionFlipVertical) {
+		filterType = Filter::FlipVertical;
+	} else {
+		return;
+	}
+
+	qDebug() << __func__
+		 << QString("%1 Filter: %2")
+			.arg((enable) ? "Add" : "Remove")
+			.arg(filterType);
+
+	if (enable) {
+		Filter *f = Filter::create(filterType);
+		if (f) {
+			ui->videoWidget->addFilter(f);
+		}
+	} else {
+		ui->videoWidget->removeFilter(filterType);
+	}
 }
