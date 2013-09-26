@@ -1,4 +1,4 @@
 INCLUDEPATH += $$PWD
 
-HEADERS += QUpdateLabel.h
-SOURCES += QUpdateLabel.cpp
+HEADERS += $$PWD/QUpdateLabel.h
+SOURCES += $$PWD/QUpdateLabel.cpp
