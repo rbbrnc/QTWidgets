@@ -13,7 +13,8 @@ class Filter
 {
 	public:
 		enum Type {
-			Rotation90CW = 1,
+			None = 0,
+			Rotation90CW,
 			Rotation90CCW,
 			Rotation180,
 			BrightnessContrast,
@@ -31,7 +32,7 @@ class Filter
 		// The "Virtual Constructor"
 		static Filter *create(enum Filter::Type type);
 
-		Filter()  {}
+		Filter()  { m_type = Filter::None; }
 		virtual ~Filter() {}
 
 		enum Filter::Type type() const { return m_type; }

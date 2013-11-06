@@ -10,6 +10,7 @@
 DownloadManager::DownloadManager(QObject *parent)
 	: QObject(parent)
 {
+	currentDownload = 0;
 }
 
 QString DownloadManager::saveFileName(const QUrl &url)

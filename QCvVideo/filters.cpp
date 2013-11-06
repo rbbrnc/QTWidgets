@@ -17,6 +17,7 @@ Filter *Filter::create(enum Filter::Type type)
 		return new FlipFilter(FP::Horizontal);
 	case Filter::FlipVertical:
 		return new FlipFilter(FP::Vertical);
+	case Filter::None:
 	default:
 		qDebug() << __PRETTY_FUNCTION__ << "Invalid Filter Type";
 		return NULL;
