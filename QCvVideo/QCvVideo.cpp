@@ -543,6 +543,9 @@ void QCvVideo::removeFilter(enum Filter::Type ft)
 
 void QCvVideo::setFrameRate(int fps)
 {
+	if (!m_capture) {
+		return;
+	}
 
 	if (fps < 1) {
 		pause();
