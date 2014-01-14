@@ -40,6 +40,8 @@ class MainWindow : public QMainWindow
 
 		void onFilterToggled(bool enable);
 
+		void onFrameRate();
+
 	private:
 		Ui::MainWindow *ui;
 

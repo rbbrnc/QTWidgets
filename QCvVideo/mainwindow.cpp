@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QTime>
 #include <QDebug>
@@ -37,6 +38,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionFlipHorizontal, SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
 	connect(ui->actionFlipVertical,   SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
+
+	connect(ui->actionFrameRate, SIGNAL(triggered()), this, SLOT(onFrameRate()));
+}
+
+void MainWindow::onFrameRate()
+{
+	bool ok;
+	int i = QInputDialog::getInt(this, tr("Change Frame Rate"),
+			tr("Original Frame Rate: %1").arg(ui->videoWidget->videoFps()),
+			ui->videoWidget->fps(), 1, 1000, 1, &ok);
+
+	if (ok)
+		ui->videoWidget->setFrameRate(i);
 }
 
 MainWindow::~MainWindow()

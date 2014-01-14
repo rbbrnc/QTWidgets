@@ -13,6 +13,8 @@ QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
 	m_image(0),
 	m_aspectRatioMode(aspectRatioMode),
 	m_frameCount(0),
+	m_fps(0),
+	m_videoFps(0),
 	m_duration(0)
 {
 /*
@@ -39,6 +41,16 @@ QCvVideo::~QCvVideo()
 	for (int i = 0; i < m_filters.count(); i++) {
 		delete m_filters[i];
 	}
+}
+
+int QCvVideo::fps() const
+{
+	return m_fps;
+}
+
+int QCvVideo::videoFps() const
+{
+	return m_videoFps;
 }
 
 QString QCvVideo::codec() const
@@ -137,7 +149,8 @@ bool QCvVideo::open(const QString &fileName)
 	}
 
 	// Retrieve fps from the video. If not available, default will be 25
-	m_fps = m_capture->get(CV_CAP_PROP_FPS);
+	m_videoFps = m_capture->get(CV_CAP_PROP_FPS);
+	m_fps = m_videoFps;
 
 	if (!m_fps) {
 		m_fps = 25;
@@ -527,3 +540,27 @@ void QCvVideo::removeFilter(enum Filter::Type ft)
 	}
 
 }
+
+void QCvVideo::setFrameRate(int fps)
+{
+
+	if (fps < 1) {
+		pause();
+		return;
+	}
+
+	if (fps > 1000) {
+		fps = 1000;
+	}
+
+	qDebug() << __PRETTY_FUNCTION__
+		 << "FPS Orig:" << m_videoFps << "(" << 1000/m_videoFps << "s)"
+		 << "To:" << fps << "(" << 1000/fps << "s)";
+
+	m_fps = fps;
+	// Restart Timer with new interval
+	m_timer->start(1000 / fps);
+}
+
+
+

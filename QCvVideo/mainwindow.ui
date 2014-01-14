@@ -151,7 +151,7 @@
      <x>0</x>
      <y>0</y>
      <width>333</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -180,6 +180,8 @@
     <addaction name="actionRotate90cw"/>
     <addaction name="actionRotate90ccw"/>
     <addaction name="actionRotate180"/>
+    <addaction name="separator"/>
+    <addaction name="actionFrameRate"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -274,6 +276,14 @@
    </property>
    <property name="text">
     <string>Rotate 180</string>
+   </property>
+  </action>
+  <action name="actionFrameRate">
+   <property name="text">
+    <string>FrameRate</string>
+   </property>
+   <property name="toolTip">
+    <string>Change Frame Rate</string>
    </property>
   </action>
  </widget>

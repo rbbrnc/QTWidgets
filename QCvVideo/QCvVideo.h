@@ -61,6 +61,9 @@ class QCvVideo : public QWidget
 		void pause();
 		int  goToFrame(int n);
 		void seekFrame(int increment);
+		int  fps() const;
+		int  videoFps() const;
+		void setFrameRate(int fps);
 
 	private:
 		cv::VideoCapture *m_capture;
@@ -69,7 +72,8 @@ class QCvVideo : public QWidget
 		Qt::AspectRatioMode m_aspectRatioMode;
 
 		int m_frameCount;
-		int m_fps;
+		int m_fps;		// Current FPS
+		int m_videoFps;		// Origina FPS
 		int m_duration;
 
 		QHash<int, int> m_cutList;
