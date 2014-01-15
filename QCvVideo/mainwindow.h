@@ -42,6 +42,8 @@ class MainWindow : public QMainWindow
 
 		void onFrameRate();
 
+		void onAbout();
+
 	private:
 		Ui::MainWindow *ui;
 

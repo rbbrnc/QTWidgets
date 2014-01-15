@@ -40,6 +40,19 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionFlipVertical,   SIGNAL(toggled(bool)), this, SLOT(onFilterToggled(bool)));
 
 	connect(ui->actionFrameRate, SIGNAL(triggered()), this, SLOT(onFrameRate()));
+	connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
+}
+
+void MainWindow::onAbout()
+{
+	QMessageBox::about(this, "About",
+			   QString("%1 Version %2\n\nLinked with:\nOpenCV %3\nQt %4 (running on Qt %5)")
+			   .arg(QCoreApplication::applicationName())
+			   .arg(QCoreApplication::applicationVersion())
+			   .arg(CV_VERSION)
+			   .arg(QT_VERSION_STR)
+			   .arg(qVersion())
+);
 }
 
 void MainWindow::onFrameRate()
