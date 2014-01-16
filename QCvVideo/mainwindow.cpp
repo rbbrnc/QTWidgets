@@ -8,6 +8,7 @@
 #include <QDebug>
 
 #include "cutlistdialog.h"
+#include "framemarkerdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -41,6 +42,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->actionFrameRate, SIGNAL(triggered()), this, SLOT(onFrameRate()));
 	connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
+
+	// EXPERIMENTAL
+	connect(ui->actionAddFrameMarker, SIGNAL(triggered()), this, SLOT(onAddFrameMarker()));
+	connect(ui->actionEditMarkers, SIGNAL(triggered()), this, SLOT(onEditMarkers()));
 }
 
 void MainWindow::onAbout()
@@ -51,8 +56,7 @@ void MainWindow::onAbout()
 			   .arg(QCoreApplication::applicationVersion())
 			   .arg(CV_VERSION)
 			   .arg(QT_VERSION_STR)
-			   .arg(qVersion())
-);
+			   .arg(qVersion()));
 }
 
 void MainWindow::onFrameRate()
@@ -115,6 +119,9 @@ void MainWindow::onOpen()
 		tm = tm.addMSecs(ui->videoWidget->duration());
 		m_duration = tm.toString("hh:mm:ss:zzz");
 		updateLabels(0);
+
+		m_frameMarkers.clear();
+
 	} else {
 		enableVideoControls(false);
 		enableFrameControls(false);
@@ -211,11 +218,16 @@ void MainWindow::onSaveVideo()
 
 void MainWindow::onInfo()
 {
-	QString txt = QString("File:\n%1\nCodec: %2")
-			.arg(m_currentFile)
-			.arg(ui->videoWidget->codec());
+	QTime tm(0, 0, 0, 0);
+	tm = tm.addMSecs(ui->videoWidget->duration());
 
-	QMessageBox::about(this, "Info", txt);
+	QString txt = QString("File: %1").arg(m_currentFile);
+		txt += "\nCodec: " + ui->videoWidget->codec();
+		txt += "\nFPS: " + QString::number(ui->videoWidget->videoFps());
+		txt += "\nFrames: " + QString::number(ui->videoWidget->frameCount());
+		txt += "\nDuration: " + tm.toString("hh:mm:ss:zzz");
+
+	QMessageBox::about(this, "File Info", txt);
 }
 
 void MainWindow::onFilterToggled(bool enable)
@@ -250,5 +262,29 @@ void MainWindow::onFilterToggled(bool enable)
 		}
 	} else {
 		ui->videoWidget->removeFilter(filterType);
+	}
+}
+
+void MainWindow::onAddFrameMarker()
+{
+	int frame = ui->frameSlider->value();
+
+	// Add marker if not in list.
+	if (!m_frameMarkers.contains(frame)) {
+		m_frameMarkers << frame;
+		qSort(m_frameMarkers.begin(), m_frameMarkers.end(), qLess<int>());
+		QTime tm(0, 0, 0, 0);
+		tm = tm.addMSecs(ui->videoWidget->currentMsecs());
+		qDebug() << "Add Marker at frame:" << frame
+			 << "time:" << tm.toString("hh:mm:ss:zzz");
+	}
+	qDebug() << m_frameMarkers;
+}
+
+void MainWindow::onEditMarkers()
+{
+	FrameMarkerDialog dlg(m_frameMarkers, this);
+	if (QDialog::Accepted == dlg.exec()) {
+		/*ui->videoWidget->setCutList(dlg.list());*/
 	}
 }

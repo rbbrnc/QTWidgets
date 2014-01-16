@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QList>
 
 namespace Ui {
 	class MainWindow;
@@ -25,6 +26,7 @@ class MainWindow : public QMainWindow
 		void onOpen();
 		void onSaveVideo();
 		void onInfo();
+		void onAbout();
 
 		void on_playButton_clicked();
 		void on_stopButton_clicked();
@@ -34,15 +36,14 @@ class MainWindow : public QMainWindow
 		void onFrameChanged(int frame);
 
 		void onEditCutList();
-
 		void onEnableSelection(bool enable);
 		void onCutSelection();
 
 		void onFilterToggled(bool enable);
-
 		void onFrameRate();
 
-		void onAbout();
+		void onAddFrameMarker();
+		void onEditMarkers();
 
 	private:
 		Ui::MainWindow *ui;
@@ -51,6 +52,8 @@ class MainWindow : public QMainWindow
 
 		int m_frameCount;
 		QString m_duration;
+
+		QList<int> m_frameMarkers;
 };
 
 #endif

@@ -1,6 +1,12 @@
 TEMPLATE = app
-TARGET =
+TARGET = QPlay
 INCLUDEPATH += .
+
+#-- Check QT version
+message(Qt version: $$[QT_VERSION])
+greaterThan(QT_MAJOR_VERSION, 4) {
+	QT += widgets
+}
 
 SLIDERPATH=$$PWD/../Slider
 include($$PWD/QCvVideo.pri)
@@ -10,14 +16,21 @@ include($$SLIDERPATH/QSelectionSlider.pri)
 HEADERS += \
 	mainwindow.h \
 	cutlistdialog.h \
-	filters.h
+	filters.h \
+    framemarkerdialog.h
 
 FORMS   += \
 	mainwindow.ui \
-	cutlistdialog.ui
+	cutlistdialog.ui \
+    framemarkerdialog.ui
 
 SOURCES += \
 	main.cpp \
 	mainwindow.cpp \
 	cutlistdialog.cpp \
-	filters.cpp
+	filters.cpp \
+    framemarkerdialog.cpp
+
+RESOURCES += \
+	qplay.qrc
+

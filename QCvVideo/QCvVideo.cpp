@@ -192,8 +192,8 @@ void QCvVideo::drawFrame(QPainter &painter)
 		{
 		painter.fillRect(0, 0, width(), height(), Qt::black);
 		QImage img = m_image->scaled(size(), Qt::KeepAspectRatio, Qt::FastTransformation);
-		painter.drawImage(qRound(width()  / 2) - qRound(img.width()  / 2),
-				  qRound(height() / 2) - qRound(img.height() / 2), img);
+		painter.drawImage(qRound(width()  / 2.0) - qRound(img.width()  / 2.0),
+				  qRound(height() / 2.0) - qRound(img.height() / 2.0), img);
 		}
 		break;
 
@@ -201,8 +201,8 @@ void QCvVideo::drawFrame(QPainter &painter)
 		{
 		QImage img = m_image->scaled(size(), Qt::KeepAspectRatioByExpanding, Qt::FastTransformation);
 		painter.drawImage(QRect(0, 0, width(), height()), img,
-		                  QRect(qRound(img.width()  / 2) - qRound(width()  / 2),
-					qRound(img.height() / 2) - qRound(height() / 2),
+		                  QRect(qRound(img.width()  / 2.0) - qRound(width()  / 2.0),
+					qRound(img.height() / 2.0) - qRound(height() / 2.0),
 					width(), height()));
 		}
 		break;

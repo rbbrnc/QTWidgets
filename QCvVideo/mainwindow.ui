@@ -97,47 +97,107 @@
      </layout>
     </item>
     <item>
-     <widget class="QSelectionSlider" name="frameSlider">
-      <property name="tracking">
-       <bool>false</bool>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="sizeConstraint">
-       <enum>QLayout::SetFixedSize</enum>
+       <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <item>
        <widget class="QPushButton" name="playButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
-        <property name="text">
-         <string>Play</string>
+        <property name="icon">
+         <iconset resource="qplay.qrc">
+          <normaloff>:/pixmaps/play.png</normaloff>:/pixmaps/play.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSelectionSlider" name="frameSlider">
+        <property name="tracking">
+         <bool>false</bool>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="stopButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
-        <property name="text">
-         <string>Stop</string>
+        <property name="icon">
+         <iconset resource="qplay.qrc">
+          <normaloff>:/pixmaps/stop.png</normaloff>:/pixmaps/stop.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="saveFrameButton">
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
-        <property name="text">
-         <string>Save</string>
+        <property name="icon">
+         <iconset resource="qplay.qrc">
+          <normaloff>:/pixmaps/picture_save.png</normaloff>:/pixmaps/picture_save.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -167,9 +227,24 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionEditCutList"/>
-    <addaction name="actionEnableSelection"/>
-    <addaction name="actionCutSelection"/>
+    <widget class="QMenu" name="menuMarkers">
+     <property name="title">
+      <string>Markers</string>
+     </property>
+     <addaction name="actionAddFrameMarker"/>
+     <addaction name="actionEditMarkers"/>
+    </widget>
+    <widget class="QMenu" name="menuCut_List">
+     <property name="title">
+      <string>Cut List</string>
+     </property>
+     <addaction name="actionEnableSelection"/>
+     <addaction name="actionCutSelection"/>
+     <addaction name="actionEditCutList"/>
+    </widget>
+    <addaction name="actionFrameRate"/>
+    <addaction name="menuMarkers"/>
+    <addaction name="menuCut_List"/>
    </widget>
    <widget class="QMenu" name="menuFilters">
     <property name="title">
@@ -180,8 +255,6 @@
     <addaction name="actionRotate90cw"/>
     <addaction name="actionRotate90ccw"/>
     <addaction name="actionRotate180"/>
-    <addaction name="separator"/>
-    <addaction name="actionFrameRate"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -298,6 +371,22 @@
     <string>About</string>
    </property>
   </action>
+  <action name="actionAddFrameMarker">
+   <property name="text">
+    <string>Add Frame Marker</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Frame Marker</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionEditMarkers">
+   <property name="text">
+    <string>Edit Markers</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -312,6 +401,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="qplay.qrc"/>
+ </resources>
  <connections/>
 </ui>
