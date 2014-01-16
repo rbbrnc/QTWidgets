@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pixmaps/pause.png</file>
+        <file>pixmaps/play.png</file>
+        <file>pixmaps/stop.png</file>
+        <file>pixmaps/picture_save.png</file>
+    </qresource>
+</RCC>
