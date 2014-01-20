@@ -23,16 +23,12 @@ QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
 	f->setParameter(Filter::Contrast, 0);
 	m_filters.append(f);
 */
-	m_timer = new QTimer();
+    m_timer = new QTimer(this);
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updateFrame()));
 }
 
 QCvVideo::~QCvVideo()
 {
-	if (m_timer) {
-		m_timer->stop();
-		delete m_timer;
-	}
 	if (m_capture) {
 		m_capture->release();
 		delete m_capture;
@@ -41,6 +37,10 @@ QCvVideo::~QCvVideo()
 	for (int i = 0; i < m_filters.count(); i++) {
 		delete m_filters[i];
 	}
+
+    if (m_image) {
+        delete m_image;
+    }
 }
 
 int QCvVideo::fps() const
