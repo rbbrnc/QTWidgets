@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionSaveFrame, SIGNAL(triggered()), this, SLOT(on_saveFrameButton_clicked()));
 	connect(ui->actionSaveVideo, SIGNAL(triggered()), this, SLOT(onSaveVideo()));
 	connect(ui->actionInfo, SIGNAL(triggered()), this, SLOT(onInfo()));
+    connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
+
 
 	connect(ui->actionEditCutList,  SIGNAL(triggered()), this, SLOT(onEditCutList()));
 	connect(ui->actionEnableSelection, SIGNAL(toggled(bool)), this, SLOT(onEnableSelection(bool)));

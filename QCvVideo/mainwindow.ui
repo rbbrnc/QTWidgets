@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>333</width>
+    <width>338</width>
     <height>327</height>
    </rect>
   </property>
@@ -210,8 +210,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>333</width>
-     <height>20</height>
+     <width>338</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -222,6 +222,8 @@
     <addaction name="actionSaveFrame"/>
     <addaction name="actionSaveVideo"/>
     <addaction name="actionInfo"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -385,6 +387,11 @@
   <action name="actionEditMarkers">
    <property name="text">
     <string>Edit Markers</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>
