@@ -21,15 +21,18 @@ SOURCES += \
 	main.cpp \
 	sipclient.cpp \
 	MainWindow.cpp \
-	downloadmanager.cpp
+	downloadmanager.cpp \
+    authenticationdialog.cpp
 
 HEADERS += \
 	sipclient.h \
 	MainWindow.h \
-	downloadmanager.h
+	downloadmanager.h \
+    authenticationdialog.h
 
 FORMS += \
 	MainWindow.ui \
+    authenticationdialog.ui
 
 #RESOURCES += pixmaps.qrc
 
@@ -52,17 +55,12 @@ unix:contains(QT_ARCH, powerpc): {
 }
 
 unix:contains(QT_ARCH, i386): {
+
+	LINPHONE_CFLAGS = $$system(pkg-config linphone --cflags)
+	LINPHONE_LFLAGS = $$system(pkg-config linphone --libs)
+
 	QMAKE_CXXFLAGS += -Wall -W -Wunreachable-code -g -ggdb
-
-	INCLUDEPATH += /opt/linphone.minimal/include
-
-	LIBS += /opt/linphone.minimal/lib/liblinphone.a
-	LIBS += /opt/linphone.minimal/lib/libmediastreamer_base.a
-	LIBS += /opt/linphone.minimal/lib/libmediastreamer_voip.a
-	LIBS += /opt/linphone.minimal/lib/libortp.a
-	LIBS += /usr/local/lib/libeXosip2.a
-	LIBS += /usr/local/lib/libosip2.a
-	LIBS += /usr/local/lib/libosipparser2.a
-	LIBS += -lssl -lresolv
+	QMAKE_CXXFLAGS += $$LINPHONE_CFLAGS
+	LIBS += $$LINPHONE_LFLAGS
 }
 

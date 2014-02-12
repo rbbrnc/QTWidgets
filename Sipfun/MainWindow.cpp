@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include "sipclient.h"
+#include "authenticationdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -20,18 +21,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Init & Start SIP
 	m_sip = SipClient::instance();
 
-	m_identity = QString("sip:ricarica@sip.linphone.org");
-
-	if (m_identity.isNull()) {
-		ui->identityLabel->setText("local");
-	} else {
-		ui->identityLabel->setText("OK"/*m_identity*/);
-		m_sip->setIdentity(m_identity.toLatin1().data(), "ricarica.0x01");
-	}
-
 	QPixmap pix;
 	pix.load("QR.png");
 	ui->label_2->setPixmap(pix);
+
+	connect(m_sip, SIGNAL(registrationStateChanged(SipClient::RegistrationState)),
+		this, SLOT(onRegistrationStateChanged(SipClient::RegistrationState)));
+
 
 	connect(m_sip, SIGNAL(messageReceived(const QString &, const QString &, const QString &)),
 		this, SLOT(onMessageReceived(const QString &, const QString &, const QString &)));
@@ -39,14 +35,45 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&dlmgr, SIGNAL(finished(const QString &)),
 		this, SLOT(onDownloadFinished(const QString &)));
 
-	connect(&dlmgr, SIGNAL(progress(quint64)), this, SLOT(onDownloadProgress(qint64)));
+	connect(&dlmgr, SIGNAL(progress(qint64)), this, SLOT(onDownloadProgress(qint64)));
 
+
+	m_registered = false;
+	ui->statusLabel->setText("Not Registered");
 }
 
 MainWindow::~MainWindow()
 {
 	m_sip->shutdown();
 	delete ui;
+}
+
+void MainWindow::onRegistrationStateChanged(SipClient::RegistrationState state)
+{
+	m_registered = false;
+
+	switch (state) {
+	case SipClient::RegistrationNone:
+	case SipClient::RegistrationCleared:
+		ui->statusLabel->setText("Not Registered");
+		break;
+	case SipClient::RegistrationInProgress:
+		ui->statusLabel->setText("Registration In Progress...");
+		break;
+	case SipClient::RegistrationOk:
+		ui->statusLabel->setText("Registered");
+		m_registered = true;
+		break;
+	case SipClient::RegistrationFailed:
+	default:
+		ui->statusLabel->setText("Registration Failed");
+		break;
+	}
+
+	if (m_registered)
+		ui->loginButton->setText("Logout");
+	else
+		ui->loginButton->setText("Login");
 }
 
 void MainWindow::onDownloadFinished(const QString &filename)
@@ -57,7 +84,7 @@ void MainWindow::onDownloadFinished(const QString &filename)
 	ui->label_2->setUpdateMode(false);
 }
 
-void MainWindow::onDownloadProgress(quint64 percent)
+void MainWindow::onDownloadProgress(qint64 percent)
 {
 	ui->label_2->setPercentage(percent);
 }
@@ -103,4 +130,22 @@ void MainWindow::on_pushButton_clicked()
 	QPainter painter(&output);
 	ui->label_2->render(&painter);
 */
+}
+
+void MainWindow::on_loginButton_clicked()
+{
+	if (!m_registered) {
+	    AuthenticationDialog dlg(this);
+	    if (dlg.exec() == QDialog::Accepted) {
+	        m_identity = dlg.identity();
+	        if (m_identity.isEmpty()) {
+	            ui->identityLabel->setText("local");
+	        } else {
+	            ui->identityLabel->setText(m_identity);
+	            m_sip->setIdentity(m_identity.toLatin1().data(), dlg.password().toLatin1().data());
+	        }
+	    }
+	} else {
+		m_sip->shutdown();
+	}
 }

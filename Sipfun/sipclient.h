@@ -21,16 +21,26 @@ class SipClient : public QObject
 		bool setIdentity(const QString &identity, const QString &password);
 		bool sendMessage(const QString &to, const QString &message);
 
+		enum RegistrationState {
+			RegistrationNone       = LinphoneRegistrationNone,     // Initial state for registrations
+			RegistrationInProgress = LinphoneRegistrationProgress, // Registration is in progress
+			RegistrationOk         = LinphoneRegistrationOk,       // Registration is successful
+			RegistrationCleared    = LinphoneRegistrationCleared,  // Unregistration succeeded
+			RegistrationFailed     = LinphoneRegistrationFailed    // Registration failed
+		};
+
 		void shutdown();
 
 		// Called from linphone callbacks to emit signals
 		void messageReceivedCb(LinphoneChatMessage *message);
+		void registrationStateChangedCb(LinphoneRegistrationState cstate);
 
 	private:
 		void init();
 
 	signals:
 		void messageReceived(const QString &from, const QString &text, const QString &url);
+		void registrationStateChanged(SipClient::RegistrationState state);
 
 	private slots:
 		void update();

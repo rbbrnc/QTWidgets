@@ -22,11 +22,13 @@ class MainWindow : public QMainWindow
 
 	private slots:
 		void onDownloadFinished(const QString &filename);
-		void onDownloadProgress(quint64 percent);
+		void onDownloadProgress(qint64 percent);
+		void onRegistrationStateChanged(SipClient::RegistrationState state);
 
-	        void on_pushButton_clicked();
+        void on_pushButton_clicked();
+        void on_loginButton_clicked();
 
-	public slots:
+    public slots:
 		void onMessageReceived(const QString &from, const QString &msg, const QString &url);
 
 	private:
@@ -37,6 +39,8 @@ class MainWindow : public QMainWindow
 		QString m_identity;
 
 		DownloadManager dlmgr;
+
+		bool m_registered;
 };
 
 #endif

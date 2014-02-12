@@ -20,10 +20,18 @@ static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyCo
 	Q_UNUSED(lc)
 	Q_UNUSED(message)
 
+	SipClient *sc = SipClient::instance();
+	sc->registrationStateChangedCb(cstate);
+
 	printf("New registration state %s for user id [%s] at proxy [%s]\n",
 		linphone_registration_state_to_string(cstate),
 		linphone_proxy_config_get_identity(cfg),
 		linphone_proxy_config_get_addr(cfg));
+}
+
+void SipClient::registrationStateChangedCb(LinphoneRegistrationState cstate)
+{
+	emit registrationStateChanged(static_cast<SipClient::RegistrationState>(cstate));
 }
 
 #if 0
@@ -84,20 +92,28 @@ void SipClient::shutdown()
 	if (m_authInfo) {
 		linphone_auth_info_destroy(m_authInfo);
 
-	        linphone_core_get_default_proxy(lc, &m_proxyCfg);	 /* get default proxy config*/
-	        linphone_proxy_config_edit(m_proxyCfg);			 /* start editing proxy configuration*/
-	        linphone_proxy_config_enable_register(m_proxyCfg, FALSE); /* de-activate registration for this proxy config*/
-	        linphone_proxy_config_done(m_proxyCfg);			 /* initiate REGISTER with expire = 0*/
+		// Get default proxy config
+		linphone_core_get_default_proxy(lc, &m_proxyCfg);
+		// start editing proxy configuration
+		linphone_proxy_config_edit(m_proxyCfg);
+		// De-activate registration for this proxy config
+		linphone_proxy_config_enable_register(m_proxyCfg, FALSE);
+		linphone_proxy_config_done(m_proxyCfg);
 
-	        while (linphone_proxy_config_get_state(m_proxyCfg) !=  LinphoneRegistrationCleared) {
-	                linphone_core_iterate(lc); /*to make sure we receive call backs before shutting down*/
+		while (linphone_proxy_config_get_state(m_proxyCfg) != LinphoneRegistrationCleared) {
+			//...to make sure we receive call backs before shutting down
+			linphone_core_iterate(lc);
 			ms_usleep(50000);
 		}
+		m_authInfo = 0;
 	}
 
-	delete m_loopTimer;
+//	delete m_loopTimer;
 
-	linphone_core_destroy(lc);
+	if (lc) {
+		linphone_core_destroy(lc);
+		lc = 0;
+	}
 }
 
 void SipClient::update()
@@ -131,7 +147,7 @@ bool SipClient::setIdentity(const QString &identity, const QString &password)
 		return false;
         }
 
-	m_authInfo = linphone_auth_info_new(linphone_address_get_username(from), NULL, password.toLatin1().data(), NULL, NULL);
+	m_authInfo = linphone_auth_info_new(linphone_address_get_username(from), NULL, password.toLatin1().data(), NULL, NULL, NULL);
 	linphone_core_add_auth_info(lc, m_authInfo);
 
 	/* Configure proxy entries */
@@ -162,10 +178,12 @@ bool SipClient::setIdentity(const QString &identity, const QString &password)
 
 void SipClient::init()
 {
+	qDebug() << "linphone core version:" << linphone_core_get_version();
+
 	m_loopTimer->setInterval(50);
 	connect(m_loopTimer, SIGNAL(timeout()), this, SLOT(update()));
 
-	LinphoneCoreVTable vtable = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+	LinphoneCoreVTable vtable = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 #ifdef DEBUG
 	/* Enable liblinphone logs. */
