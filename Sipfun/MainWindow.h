@@ -28,7 +28,11 @@ class MainWindow : public QMainWindow
         void on_pushButton_clicked();
         void on_loginButton_clicked();
 
-    public slots:
+        void on_openFileButton_clicked();
+
+        void on_sendButton_clicked();
+
+public slots:
 		void onMessageReceived(const QString &from, const QString &msg, const QString &url);
 
 	private:

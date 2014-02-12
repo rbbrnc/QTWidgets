@@ -34,14 +34,19 @@ void SipClient::registrationStateChangedCb(LinphoneRegistrationState cstate)
 	emit registrationStateChanged(static_cast<SipClient::RegistrationState>(cstate));
 }
 
-#if 0
 /* ONLY for Text messages */
 static void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message)
 {
-	printf("Text Message [%s] received from [%s]\n", message, linphone_address_as_string(from));
-	//running = FALSE;
+	Q_UNUSED(lc)
+	Q_UNUSED(room)
+
+	qDebug() << __PRETTY_FUNCTION__
+			 <<	"Text Message:" << message
+			 << "received from:" << linphone_address_as_string(from);
+
+	SipClient *sc = SipClient::instance();
+	sc->messageReceivedCb(QString(message), QString(linphone_address_as_string(from)));
 }
-#endif
 
 /* Messages with attachments */
 static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message)
@@ -56,6 +61,13 @@ static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneC
 	sc->messageReceivedCb(message);
 }
 
+// Called from text_received callback
+void SipClient::messageReceivedCb(const QString &from, const QString &text)
+{
+	emit messageReceived(from, text, QString());
+}
+
+// Called from message_received callback
 void SipClient::messageReceivedCb(LinphoneChatMessage *message)
 {
 	QString url  = QString(linphone_chat_message_get_external_body_url(message));
@@ -183,7 +195,7 @@ void SipClient::init()
 	m_loopTimer->setInterval(50);
 	connect(m_loopTimer, SIGNAL(timeout()), this, SLOT(update()));
 
-	LinphoneCoreVTable vtable = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	LinphoneCoreVTable vtable = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 #ifdef DEBUG
 	/* Enable liblinphone logs. */
@@ -192,7 +204,7 @@ void SipClient::init()
 
 	/* Fill the LinphoneCoreVTable with application callbacks. All are optional. */
 	vtable.registration_state_changed = registration_state_changed;
-//	vtable.text_received              = text_received;
+	vtable.text_received              = text_received;
 	vtable.message_received           = message_received;
 //	vtable.call_state_changed
 //	vtable.notify_presence_recv
@@ -212,8 +224,8 @@ void SipClient::init()
 //	vtable.display_url
 //	vtable.show
 
-        /* Instantiate a LinphoneCore object given the LinphoneCoreVTable */
-        lc = linphone_core_new(&vtable, NULL, NULL, NULL);
+	/* Instantiate a LinphoneCore object given the LinphoneCoreVTable */
+	lc = linphone_core_new(&vtable, NULL, NULL, NULL);
 
 	if (lc) {
 		m_loopTimer->start();

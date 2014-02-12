@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 
 #include <QGraphicsBlurEffect>
+#include <QFileDialog>
 #include <QPainter>
 #include <QDebug>
 
@@ -148,4 +149,23 @@ void MainWindow::on_loginButton_clicked()
 	} else {
 		m_sip->shutdown();
 	}
+}
+
+void MainWindow::on_openFileButton_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Select File");
+    if (fileName.isEmpty()) {
+        return;
+    }
+}
+
+void MainWindow::on_sendButton_clicked()
+{
+    QString to  = ui->toLineEdit->text();
+    QString txt = ui->messageLineEdit->text();
+
+    if (to.isEmpty())
+        return;
+
+    m_sip->sendMessage(to, txt);
 }

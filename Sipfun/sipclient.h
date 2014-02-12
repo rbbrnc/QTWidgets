@@ -33,6 +33,7 @@ class SipClient : public QObject
 
 		// Called from linphone callbacks to emit signals
 		void messageReceivedCb(LinphoneChatMessage *message);
+		void messageReceivedCb(const QString &from, const QString &text);
 		void registrationStateChangedCb(LinphoneRegistrationState cstate);
 
 	private:
