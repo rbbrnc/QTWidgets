@@ -6,7 +6,6 @@
 #include <QPainter>
 #include <QDebug>
 
-#include "sipclient.h"
 #include "authenticationdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,16 +18,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	// On embedded we don't want windows decorations
 	setWindowFlags(Qt::FramelessWindowHint);
 #endif
-	// Init & Start SIP
-	m_sip = SipClient::instance();
+
+	m_sip = new QLinPhoneCore(50, this);
 
 	QPixmap pix;
 	pix.load("QR.png");
 	ui->label_2->setPixmap(pix);
 
-	connect(m_sip, SIGNAL(registrationStateChanged(SipClient::RegistrationState)),
-		this, SLOT(onRegistrationStateChanged(SipClient::RegistrationState)));
-
+	connect(m_sip, SIGNAL(registrationStateChanged(QLinPhoneCore::RegistrationState)),
+		this, SLOT(onRegistrationStateChanged(QLinPhoneCore::RegistrationState)));
 
 	connect(m_sip, SIGNAL(messageReceived(const QString &, const QString &, const QString &)),
 		this, SLOT(onMessageReceived(const QString &, const QString &, const QString &)));
@@ -38,43 +36,37 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(&dlmgr, SIGNAL(progress(qint64)), this, SLOT(onDownloadProgress(qint64)));
 
+	connect(&upmgr, SIGNAL(finished(const QString &)),
+		this, SLOT(onUploadFinished(const QString &)));
 
-	m_registered = false;
+	connect(&upmgr, SIGNAL(progress(qint64)), this, SLOT(onUploadProgress(qint64)));
+
 	ui->statusLabel->setText("Not Registered");
 }
 
 MainWindow::~MainWindow()
 {
-	m_sip->shutdown();
+	delete m_sip;
 	delete ui;
 }
 
-void MainWindow::onRegistrationStateChanged(SipClient::RegistrationState state)
+void MainWindow::onRegistrationStateChanged(QLinPhoneCore::RegistrationState state)
 {
-	m_registered = false;
+	Q_UNUSED(state)
 
-	switch (state) {
-	case SipClient::RegistrationNone:
-	case SipClient::RegistrationCleared:
-		ui->statusLabel->setText("Not Registered");
-		break;
-	case SipClient::RegistrationInProgress:
-		ui->statusLabel->setText("Registration In Progress...");
-		break;
-	case SipClient::RegistrationOk:
-		ui->statusLabel->setText("Registered");
-		m_registered = true;
-		break;
-	case SipClient::RegistrationFailed:
-	default:
-		ui->statusLabel->setText("Registration Failed");
-		break;
-	}
 
-	if (m_registered)
+	ui->statusLabel->setText(m_sip->registrationStateString());
+	if (m_sip->isRegistered()) {
 		ui->loginButton->setText("Logout");
-	else
-		ui->loginButton->setText("Login");
+		ui->loginButton->setEnabled(true);
+	} else {
+		if (m_sip->registrationState() == QLinPhoneCore::RegistrationInProgress) {
+			ui->loginButton->setEnabled(false);
+		} else {
+			ui->loginButton->setText("Login");
+			ui->loginButton->setEnabled(true);
+		}
+	}
 }
 
 void MainWindow::onDownloadFinished(const QString &filename)
@@ -90,12 +82,30 @@ void MainWindow::onDownloadProgress(qint64 percent)
 	ui->label_2->setPercentage(percent);
 }
 
+void MainWindow::onUploadFinished(const QString &filename)
+{
+    QString to  = ui->toLineEdit->text();
+    QString txt = ui->messageLineEdit->text();
+
+    if (to.isEmpty())
+        return;
+
+	qDebug() << __PRETTY_FUNCTION__ << "To:" << to << "File:" << filename;
+
+    m_sip->sendPicture(to, filename);
+}
+
+void MainWindow::onUploadProgress(qint64 percent)
+{
+	qDebug() << "Upload:" << percent << "%";
+}
+
 void MainWindow::onMessageReceived(const QString &from, const QString &msg, const QString &url)
 {
 	qDebug() << __func__ << from << msg << url;
 
 	ui->messageLabel->setText(msg);
-
+/*
 	if (0 == QString::compare(msg, "status", Qt::CaseInsensitive)) {
 		m_sip->sendMessage(from, ui->label_2->text());
 	} else if (0 == QString::compare(msg, "reset", Qt::CaseInsensitive)) {
@@ -108,6 +118,7 @@ void MainWindow::onMessageReceived(const QString &from, const QString &msg, cons
 		QString col = QString("background-color: %1").arg(msg);
 		ui->label_2->setStyleSheet(col.toLatin1().data());
 	}
+*/
 
 	QUrl exturl = QUrl::fromEncoded(url.toLocal8Bit());
 	if (exturl.isValid()) {
@@ -135,19 +146,31 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_loginButton_clicked()
 {
-	if (!m_registered) {
-	    AuthenticationDialog dlg(this);
-	    if (dlg.exec() == QDialog::Accepted) {
+	switch (m_sip->registrationState()) {
+	case QLinPhoneCore::RegistrationNone:
+	case QLinPhoneCore::RegistrationCleared:
+	case QLinPhoneCore::RegistrationFailed:
+	{
+		AuthenticationDialog dlg(this);
+		if (dlg.exec() == QDialog::Accepted) {
 	        m_identity = dlg.identity();
 	        if (m_identity.isEmpty()) {
 	            ui->identityLabel->setText("local");
 	        } else {
 	            ui->identityLabel->setText(m_identity);
-	            m_sip->setIdentity(m_identity.toLatin1().data(), dlg.password().toLatin1().data());
+	            m_sip->registerToNetwork(m_identity.toLatin1().data(), dlg.password().toLatin1().data());
 	        }
-	    }
-	} else {
-		m_sip->shutdown();
+		}
+		break;
+	}
+
+	case QLinPhoneCore::RegistrationOk:
+		m_sip->unregisterFromNetwork();
+		break;
+
+	case QLinPhoneCore::RegistrationInProgress:
+	default:
+		break;
 	}
 }
 
@@ -157,6 +180,10 @@ void MainWindow::on_openFileButton_clicked()
     if (fileName.isEmpty()) {
         return;
     }
+
+	qDebug() << fileName;
+
+	upmgr.startUpload(QUrl("https://www.linphone.org:444/upload.php"), fileName);
 }
 
 void MainWindow::on_sendButton_clicked()

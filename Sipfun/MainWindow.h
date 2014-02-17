@@ -5,7 +5,8 @@
 #include <QStackedWidget>
 #include <QDialog>
 
-#include "sipclient.h"
+#include "QLinPhoneCore.h"
+#include "uploadmanager.h"
 #include "downloadmanager.h"
 
 namespace Ui {
@@ -21,9 +22,13 @@ class MainWindow : public QMainWindow
 		~MainWindow();
 
 	private slots:
+		void onUploadFinished(const QString &filename);
+		void onUploadProgress(qint64 percent);
+
 		void onDownloadFinished(const QString &filename);
 		void onDownloadProgress(qint64 percent);
-		void onRegistrationStateChanged(SipClient::RegistrationState state);
+
+		void onRegistrationStateChanged(QLinPhoneCore::RegistrationState state);
 
         void on_pushButton_clicked();
         void on_loginButton_clicked();
@@ -32,19 +37,18 @@ class MainWindow : public QMainWindow
 
         void on_sendButton_clicked();
 
-public slots:
+	public slots:
 		void onMessageReceived(const QString &from, const QString &msg, const QString &url);
 
 	private:
 		Ui::MainWindow *ui;
 
-		SipClient *m_sip;
+		QLinPhoneCore *m_sip;
 
 		QString m_identity;
 
 		DownloadManager dlmgr;
-
-		bool m_registered;
+		UploadManager   upmgr;
 };
 
 #endif

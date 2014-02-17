@@ -232,6 +232,19 @@ void SipClient::init()
 	}
 }
 
+static void on_chat_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *userdata)
+{
+	// LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
+	// Enumerator:
+	//    LinphoneChatMessageStateIdle          initial state
+	//    LinphoneChatMessageStateInProgress    delivery in progress
+	//    LinphoneChatMessageStateDelivered     message succesffully delivered an acknoleged by remote end point
+	//    LinphoneChatMessageStateNotDelivered	message was not delivered
+	//
+	//
+	qDebug() << __PRETTY_FUNCTION__ << "ChatMessageState:" << linphone_chat_message_state_to_string(state);
+}
+
 //
 // use sip:user@sip.linphone.org or for local net without internet
 //  sip.<ipaddr> e.g. sip:192.168.0.1
@@ -246,9 +259,12 @@ bool SipClient::sendMessage(const QString &to, const QString &message)
 
 	/* Sending message */
 	linphone_chat_room_send_message(m_chatRoom, message.toLatin1().data());
+	//void linphone_chat_room_send_message2(m_chatRoom,	LinphoneChatMessage *msg, on_chat_state_changed, NULL /*void *ud*/);
 
 	linphone_chat_room_destroy(m_chatRoom);
 
 	return true;
 }
+
+
 

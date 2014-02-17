@@ -58,7 +58,6 @@ class SipClient : public QObject
 		QString m_password;
 
 		QString m_msg;
-
 };
 
 #endif

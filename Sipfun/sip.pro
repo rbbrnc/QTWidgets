@@ -19,16 +19,24 @@ INCLUDEPATH += $$COMMON_PATH
 
 SOURCES += \
 	main.cpp \
-	sipclient.cpp \
 	MainWindow.cpp \
 	downloadmanager.cpp \
-    authenticationdialog.cpp
+	uploadmanager.cpp \
+    authenticationdialog.cpp \
+    QLinPhoneCore.cpp \
+	chatmessage.cpp
+
+#	sipclient.cpp \
 
 HEADERS += \
-	sipclient.h \
 	MainWindow.h \
 	downloadmanager.h \
-    authenticationdialog.h
+	uploadmanager.h \
+    authenticationdialog.h \
+    QLinPhoneCore.h \
+	chatmessage.h
+
+#	sipclient.h \
 
 FORMS += \
 	MainWindow.ui \
