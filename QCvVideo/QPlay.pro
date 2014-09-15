@@ -2,6 +2,8 @@ TEMPLATE = app
 TARGET = QPlay
 INCLUDEPATH += .
 
+#QMAKE_CXXFLAGS += -g -ggdb
+
 #-- Check QT version
 message(Qt version: $$[QT_VERSION])
 greaterThan(QT_MAJOR_VERSION, 4) {

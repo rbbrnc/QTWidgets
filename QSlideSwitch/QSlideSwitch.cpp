@@ -11,13 +11,20 @@
 // Compared to a QPushButton it's less likely that this button
 // will be pressed accidently
 //
-#include <QtCore/QTimeLine>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
+//#include <QtCore/QTimeLine>
+//#include <QtGui/QMouseEvent>
+//#include <QtGui/QPainter>
+#include <QTimeLine>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QWidget>
 
 #include <QDebug>
 
 #include "QSlideSwitch.h"
+
+// iOS Green #4CD964
+// iOS Grey  #E5E5E5
 
 QSlideSwitch::QSlideSwitch(QWidget *parent)
         : QAbstractButton(parent),
@@ -25,150 +32,206 @@ QSlideSwitch::QSlideSwitch(QWidget *parent)
         m_dragInProgress(false),
         m_position(0)
 {
+	// Default Text values
+	setTextOnOff("ON", "OFF");
+
+	m_knobBorder = 2;	// 2px border
+//	m_knobBrush = QBrush(QColor("#323232"));
+//	m_knobBorderBrush = QBrush(QColor("#7F7F7F"));
+
+//	m_iOSGreen = QBrush(QColor("#4CD964"));
+//	m_iOSGrey  = QBrush(QColor("#E5E5E5"));
+	m_iOSGreen = QColor("#4CD964");
+	m_iOSGrey  = QColor("#E5E5E5");
+
+	m_sliderBrush = QBrush(m_iOSGreen);
+	m_sliderPen   = QPen(m_iOSGreen, m_knobBorder);
+
+	m_knobBrush = QBrush(Qt::white);
+	m_knobPen   = QPen(m_iOSGreen, m_knobBorder);
+
+	m_offBrush  = QBrush(QColor("#EBEBEB"));
+	m_onBrush   = QBrush(QColor("#377FF8"));
+
 	setCheckable(true);
 	setChecked(false);
 
 	// Prepare the animated switch:
-	m_timeLine = new QTimeLine(150, this);
-	m_timeLine->setCurveShape(QTimeLine::EaseInCurve);
+//	m_timeLine = new QTimeLine(50, this);
+//	m_timeLine->setCurveShape(QTimeLine::EaseInCurve);
 
-	connect(m_timeLine, SIGNAL(frameChanged(int)), SLOT(setSwitchPosition(int)));
+//	connect(m_timeLine, SIGNAL(frameChanged(int)), SLOT(setSwitchPosition(int)));
 	connect(this, SIGNAL(toggled(bool)), this, SLOT(updateSwitchPosition(bool)));
 
 	setAttribute(Qt::WA_Hover);
-
-	// Default Text values
-	m_text_on  = "ON";
-	m_text_off = "OFF";
-
-//	m_knobBrush = QBrush(Qt::gray);
-	m_knobBrush = QBrush(QColor("#323232"));
-	m_offBrush  = QBrush(QColor("#EBEBEB"));
-	m_onBrush   = QBrush(QColor("#377FF8"));
 }
 
 QSlideSwitch::~QSlideSwitch()
 {
 }
 
-void QSlideSwitch::setOnText(const QString &text)
+void QSlideSwitch::setTextOnOff(const QString &textOn, const QString &textOff)
 {
-	m_text_on = text;
+	m_textOn = textOn;
+	m_textOnWidth = QFontMetrics(font()).width(m_textOn);
+
+	m_textOff = textOff;
+	m_textOffWidth = QFontMetrics(font()).width(m_textOff);
+
+	m_textHeight = QFontMetrics(font()).height();
 }
 
-void QSlideSwitch::setOffText(const QString &text)
+void QSlideSwitch::resizeEvent(QResizeEvent *)
 {
-	m_text_off = text;
+	m_rect  = QRectF(QPointF(0, 0), this->size());
+	m_textY = (m_rect.height() - m_textHeight) / 2;
 }
+
 
 // Overloaded paint event to draw the actual state.
 void QSlideSwitch::paintEvent(QPaintEvent *)
 {
-//	qDebug() << __func__ << m_dragInProgress;
-
+#ifdef WITH_TEXT
 	QPainter painter(this);
-//	painter.save();
 
 	painter.setRenderHint(QPainter::Antialiasing);
 	painter.setRenderHint(QPainter::TextAntialiasing);
-
-	const QRectF button = buttonRect();
-
-	int m_text_offset;
-	int m_text_h;
-	QRect m_text_rect;
-
-	m_text_h = QFontMetrics(font()).height();
+	painter.setPen(QPen(Qt::NoPen));
 
 	if (isChecked()) {
 		// Render ON background
-		painter.setPen(QPen(Qt::NoPen));
 		painter.setBrush(m_onBrush);
-		painter.drawRoundedRect(button, 8, 8);
+		painter.drawRoundedRect(m_rect, 8, 8);
 
 		// Render ON text
-		m_text_offset = QFontMetrics(font()).width(m_text_on);
-		m_text_rect = QRect(5, (button.height() - m_text_h)/2, m_text_offset, m_text_h);
+		m_text_rect = QRect(5, m_textY, m_textOnWidth, m_textHeight);
+
 		painter.setPen(QPen(Qt::white));
-		painter.drawText(m_text_rect, Qt::AlignVCenter, m_text_on);
+		painter.drawText(m_text_rect, Qt::AlignVCenter, m_textOn);
 	} else {
 		// Render OFF background
-		painter.setPen(QPen(Qt::NoPen));
-		painter.setBrush((isChecked()) ? m_onBrush : m_offBrush);
-		painter.drawRoundedRect(button, 8, 8);
+		painter.setBrush(m_offBrush);
+		painter.drawRoundedRect(m_rect, 8, 8);
 
 		// Render OFF text
-		m_text_offset = QFontMetrics(font()).width(m_text_off);
-		m_text_rect = QRect(button.width() - m_text_offset - 5,
-				   (button.height() - m_text_h)/2,
-				   m_text_offset, m_text_h);
+		m_text_rect = QRect(m_rect.width() - m_textOffWidth - 5,
+				    m_textY,
+				    m_textOffWidth,
+				    m_textHeight);
 
 		painter.setPen(QPen(QColor("#7F7F7F")));
-		painter.drawText(m_text_rect, Qt::AlignVCenter, m_text_off);
+		painter.drawText(m_text_rect, Qt::AlignVCenter, m_textOff);
 	}
 
 	// Render knob
 	painter.setBrush(m_knobBrush);
-	painter.setPen(QPen(Qt::black));
-	painter.drawRoundedRect(knobRect(), 8, 8);
-//	painter.restore();
-}
+	if (m_dragInProgress) {
+		painter.setPen(QPen(Qt::green, m_knobBorder));
+	} else {
+		painter.setPen(QPen(m_knobBorderBrush, m_knobBorder));
+	}
+	painter.drawRoundedRect(knobRect(), 18, 18);
+#else
+	/* iOS 7 Style */
+	QPainter painter(this);
+	painter.setRenderHint(QPainter::Antialiasing);
 
-// Calculates the possible QSlideSwitch visible rect over aspect ratio.
-QRectF QSlideSwitch::buttonRect() const
-{
-	// Keep aspect ratio:
-	//m_rendererBase.defaultSize();
-	//QSizeF buttonSize = QSizeF(this->width(), this->height());
-	//buttonSize.scale(size(), Qt::KeepAspectRatio);
-//	return QRectF(QPointF(0, 0), buttonSize);
+	// sx and dx borders (half circles)
+	qreal knobWidth = m_rect.height();
 
-	return QRectF(QPointF(0, 0), this->size());
+	QRectF sxRect(0, 0, knobWidth, m_rect.height());
+	QRectF dxRect(m_rect.width() - knobWidth, 0, knobWidth, m_rect.height());
+
+	QPainterPath sliderPath;
+	sliderPath.moveTo(knobWidth/2,  0);
+	sliderPath.arcTo(sxRect,  90, 180);
+	sliderPath.lineTo(m_rect.width() - knobWidth/2, m_rect.height());
+	sliderPath.arcTo(dxRect, -90, 180);
+	sliderPath.lineTo(knobWidth/2, 0);
+
+	if (isChecked()) {
+		// Render ON
+		m_sliderBrush.setColor(m_iOSGreen);
+		m_sliderPen.setColor(m_iOSGreen);
+
+//		m_knobBrush.setColor(Qt::white); UGUALE PER TUTTI
+		m_knobPen.setColor(m_iOSGreen);
+
+//		painter.setPen(QPen(m_iOSGreen, m_knobBorder));
+//		painter.setBrush(m_iOSGreen);
+//		painter.setBrush(Qt::white);	// Brush fro knob
+//		painter.drawEllipse(knobRect());
+	} else {
+		// Render OFF
+		m_sliderBrush.setColor(Qt::white);
+		m_sliderPen.setColor(m_iOSGrey);
+
+//		m_knobBrush.setColor(Qt::white);
+		m_knobPen.setColor(m_iOSGrey);
+
+//		painter.setBrush(Qt::white);
+//		painter.setPen(QPen(m_iOSGrey, m_knobBorder));
+//		painter.drawPath(sliderPath);
+	}
+
+	painter.setBrush(m_sliderBrush);
+	painter.setPen(m_sliderPen);
+	painter.drawPath(sliderPath);
+
+	painter.setBrush(Qt::white);
+	//painter.setBrush(m_knobBrush);
+	painter.setPen(m_knobPen);
+
+	// Higlight when dragging slider
+	if (m_dragInProgress) {
+		painter.setPen(QPen(QColor("#377FF8"), m_knobBorder));
+		painter.drawEllipse(knobRect());
+	} else {
+		// Render knob with last Pen & Brush
+		painter.drawEllipse(knobRect());
+	}
+
+#endif
 }
 
 // Calculates the possible QSlideSwitch knob in the widget.
 QRectF QSlideSwitch::knobRect() const
 {
-	QRectF button = buttonRect();
+	qreal knobWidth = m_rect.height();
 
-	QSizeF knobSize = QSizeF(button.height(), button.height());
-	//m_rendererKnobOn.defaultSize();
-	//knobSize.scale(button.size(), Qt::KeepAspectRatio);
-	QRectF kRect(button.topLeft() , knobSize);
+	QRectF kRect(0, 0, knobWidth, knobWidth);
 
 	// move the rect to the current position
-	qreal pos = button.left() + (button.width() - knobSize.width()) * static_cast<qreal>(m_position) / 100.0;
-	pos = qMax(button.left(), qMin(pos, button.right() - knobSize.width()));
+	qreal pos = (m_rect.width() - knobWidth - 1) * static_cast<qreal>(m_position) / 100.0;
+	pos = qMax(0.0, qMin(pos, m_rect.right() - knobWidth));
 	kRect.moveLeft(pos);
 
-//	m_knobBorderRect.setRect(kRect.x(), kRect.y(), kRect.width(), kRect.height());
-//	m_knobBorderRect = QRectF(kRect);
-
-	kRect.setHeight(kRect.height() - 1);
 	return kRect;
 }
 
 // The knob will be dragged to the moved position.
 void QSlideSwitch::mouseMoveEvent(QMouseEvent *event)
 {
-	if (m_dragInProgress) {
-		m_dragDistanceX = event->x() - m_dragStartPosition.x();
-
-		if (isChecked())
-			m_position = 100 * (buttonRect().width() - knobRect().width() + m_dragDistanceX) / (buttonRect().width() - knobRect().width());
-		else
-			m_position = 100 * m_dragDistanceX / (buttonRect().width() - knobRect().width());
-
-		if (m_position >= 100) {
-			m_position = 100;
-			setChecked(true);
-		}
-		if (m_position <= 0) {
-			m_position = 0;
-			setChecked(false);
-		}
-	} else {
+	if (!m_dragInProgress)
 		return;
+
+	m_dragDistanceX = event->x() - m_dragStartPosition.x();
+
+	qreal dx = m_rect.width() - knobRect().width();
+
+	if (isChecked()) {
+		m_position = 100 * (dx + m_dragDistanceX) / dx;
+	} else {
+		m_position = 100 * m_dragDistanceX / dx;
+	}
+
+	if (m_position > 100) {
+		m_position = 100;
+		setChecked(true);
+	}
+	if (m_position < 0) {
+		m_position = 0;
+		setChecked(false);
 	}
 
 	update();
@@ -176,35 +239,79 @@ void QSlideSwitch::mouseMoveEvent(QMouseEvent *event)
 
 void QSlideSwitch::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() == Qt::LeftButton && knobRect().contains(event->pos())) {
+	if (event->button() != Qt::LeftButton) {
+		return;
+	}
+
+	if (knobRect().contains(event->pos())) {
 		m_dragInProgress = true;
 		m_dragStartPosition = event->pos();
+	} else {
+		toggle();
 	}
 }
 
-// Overloaded function mouseReleaseEvent()
 void QSlideSwitch::mouseReleaseEvent(QMouseEvent *)
 {
-	if (m_position < 100) {
-		if (isChecked())
-			m_timeLine->setFrameRange(100 - m_position, 100);
-		else
-			m_timeLine->setFrameRange(m_position, 100);
-	} else {
-		m_timeLine->setFrameRange(0, 100);
+	if (!m_dragInProgress) {
+		return;
 	}
 
-	if (!(m_dragDistanceX != 0 && (m_position == 0 || m_position == 100))) {
-		m_timeLine->start();
+//	qDebug() << __func__;
+
+	if (isChecked()) {
+		if (m_position <= 90) {
+			setChecked(false);
+			m_position = 0;
+		} else {
+			m_position = 100;
+			update();
+		}
+	} else {
+		if (m_position >= 10) {
+			setChecked(true);
+			m_position = 100;
+		} else {
+			m_position = 0;
+			update();
+		}
 	}
+
+#if 0
+
+	if (m_position < 100) {
+		setChecked(!isChecked());
+		/*
+
+		if (isChecked()) {
+			m_timeLine->setFrameRange(100 - m_position, 100);
+		qDebug() << "100-p, 100";
+		} else {
+			m_timeLine->setFrameRange(m_position, 100);
+			qDebug() << "p, 100";
+		}
+		*/
+	} else {
+		m_timeLine->setFrameRange(0, 100);
+		qDebug() << "0, 100";
+	}
+
+	//if (!(m_dragDistanceX != 0 && (m_position == 0 || m_position == 100))) {
+	if (m_dragDistanceX != 0 && (m_position != 0 || m_position != 100)) {
+		if (m_timeLine->state() != QTimeLine::Running) {
+			//m_timeLine->start();
+		}
+	}
+#endif
 	m_dragDistanceX = 0;
 	m_dragInProgress = false;
 }
 
+// Overloaded QAbstractButton
 // Check if the widget has been clicked. Overloaded to define own hit area.
 bool QSlideSwitch::hitButton(const QPoint & pos) const
 {
-	return buttonRect().contains(pos);
+	return m_rect.contains(pos);
 }
 
 // Animation to change the state of the widget at the end of the
@@ -213,8 +320,6 @@ bool QSlideSwitch::hitButton(const QPoint & pos) const
 void QSlideSwitch::setSwitchPosition(int position)
 {
 	m_position = isChecked() ? 100 - position : position;
-
-	update();
 
 	if (m_position == 100) {
 		setChecked(true);
@@ -231,17 +336,7 @@ void QSlideSwitch::updateSwitchPosition(bool checked)
 	m_position = (checked) ? 100 : 0;
 }
 
-// Return size hint provided by the SVG graphics.
-// Can be changed during runtime.
 QSize QSlideSwitch::sizeHint() const
 {
-#if 0
-	if (m_rendererBase.isValid()) {
-		return m_rendererBase.defaultSize();
-	} else {
-		return QSize(100, 24);
-	}
-#endif
-
 	return this->size();
 }

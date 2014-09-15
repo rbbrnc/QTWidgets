@@ -23,7 +23,7 @@ QCvVideo::QCvVideo(QWidget *parent, Qt::AspectRatioMode aspectRatioMode) :
 	f->setParameter(Filter::Contrast, 0);
 	m_filters.append(f);
 */
-    m_timer = new QTimer(this);
+	m_timer = new QTimer(this);
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updateFrame()));
 }
 
@@ -538,7 +538,6 @@ void QCvVideo::removeFilter(enum Filter::Type ft)
 			delete f;
 		}
 	}
-
 }
 
 void QCvVideo::setFrameRate(int fps)

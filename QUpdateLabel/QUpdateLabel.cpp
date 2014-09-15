@@ -28,7 +28,7 @@ void QUpdateLabel::init()
 	m_updating = false;
 	m_count    = 0;
 
-        m_updateBarColor = QColor(0x1C, 0xA4, 0xFF);
+	m_updateBarColor = QColor(0x1C, 0xA4, 0xFF);
 
 	setFocusPolicy(Qt::NoFocus);
 	setScaledContents(true);
@@ -89,7 +89,7 @@ void QUpdateLabel::paintEvent(QPaintEvent *event)
 	}
 
 	// Draw bar frame
-        painter.setPen(QPen(Qt::white, 1));
+	painter.setPen(QPen(Qt::white, 1));
 	painter.drawRect(frameBarRect);
 	painter.restore();
 }
