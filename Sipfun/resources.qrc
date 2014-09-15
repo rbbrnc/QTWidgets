@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Pixmaps/chat_send.png</file>
+    </qresource>
+</RCC>

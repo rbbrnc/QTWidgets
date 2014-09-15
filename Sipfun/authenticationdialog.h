@@ -22,6 +22,9 @@ class AuthenticationDialog : public QDialog
         virtual void accept();
         virtual void reject();
 
+    private slots:
+        void on_showPasswordCheckBox_toggled(bool checked);
+
     private:
         Ui::AuthenticationDialog *ui;
 

@@ -49,6 +49,7 @@ static void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const Linpho
 QLinPhoneCore::QLinPhoneCore(int loopInterval, QObject *parent)
 	: QObject(parent)
 {
+    m_authInfo = 0;
 	m_rstate = QLinPhoneCore::RegistrationNone;
 	m_loopTimer = new QTimer(this);
 	m_loopTimer->setInterval(loopInterval);
@@ -155,7 +156,6 @@ QString QLinPhoneCore::registrationStateString() const
 	return QString(linphone_registration_state_to_string(s));
 }
 
-
 bool QLinPhoneCore::registerToNetwork(const QString &identity, const QString &password)
 {
 	/* Create Proxy Config*/
@@ -245,13 +245,10 @@ static void on_chat_message_state_changed(LinphoneChatMessage *msg, LinphoneChat
 	Q_UNUSED(ud)
 
 	qDebug() << linphone_chat_message_state_to_string(state)
-			 << "From:" <<
+             << "From:"
 			 << linphone_chat_message_get_external_body_url(msg);
 
-
 	//LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
-
-
 //	linphone_chat_message_destroy(msg);
 }
 
@@ -270,13 +267,9 @@ bool QLinPhoneCore::sendPicture(const QString &to, const QString &fileName)
 	m_extUrl = "https://www.linphone.org:444/download/" + fileName;
 
 	linphone_chat_message_set_external_body_url(msg, m_extUrl.toLatin1().data());
-
 	linphone_chat_room_send_message2(m_chatRoom, msg, on_chat_message_state_changed, this);
 
 //    linphone_chat_room_destroy(m_chatRoom);
 
     return true;
 }
-
-
-

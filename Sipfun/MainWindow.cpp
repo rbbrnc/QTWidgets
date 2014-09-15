@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+    ui->sendButton->setEnabled(false);
 
 #ifdef Q_WS_QWS
 	// On embedded we don't want windows decorations
@@ -52,21 +53,27 @@ MainWindow::~MainWindow()
 
 void MainWindow::onRegistrationStateChanged(QLinPhoneCore::RegistrationState state)
 {
-	Q_UNUSED(state)
+    ui->statusLabel->setText(m_sip->registrationStateString());
 
-
-	ui->statusLabel->setText(m_sip->registrationStateString());
-	if (m_sip->isRegistered()) {
-		ui->loginButton->setText("Logout");
-		ui->loginButton->setEnabled(true);
-	} else {
-		if (m_sip->registrationState() == QLinPhoneCore::RegistrationInProgress) {
-			ui->loginButton->setEnabled(false);
-		} else {
-			ui->loginButton->setText("Login");
-			ui->loginButton->setEnabled(true);
-		}
-	}
+    switch (state) {
+    case QLinPhoneCore::RegistrationOk:
+        ui->loginButton->setText("Logout");
+        ui->loginButton->setEnabled(true);
+        ui->sendButton->setEnabled(true);
+        break;
+    case QLinPhoneCore::RegistrationInProgress:
+        ui->loginButton->setEnabled(false);
+        ui->sendButton->setEnabled(false);
+        break;
+    case QLinPhoneCore::RegistrationNone:
+    case QLinPhoneCore::RegistrationCleared:
+    case QLinPhoneCore::RegistrationFailed:
+    default:
+        ui->loginButton->setText("Login");
+        ui->loginButton->setEnabled(true);
+        ui->sendButton->setEnabled(false);
+        break;
+    }
 }
 
 void MainWindow::onDownloadFinished(const QString &filename)
@@ -103,8 +110,12 @@ void MainWindow::onUploadProgress(qint64 percent)
 void MainWindow::onMessageReceived(const QString &from, const QString &msg, const QString &url)
 {
 	qDebug() << __func__ << from << msg << url;
+    //ui->messageLabel->setText(msg);
 
-	ui->messageLabel->setText(msg);
+    //ui->chatTextEdit->appendPlainText(msg);
+    updateChatText(Qt::green, msg);
+
+
 /*
 	if (0 == QString::compare(msg, "status", Qt::CaseInsensitive)) {
 		m_sip->sendMessage(from, ui->label_2->text());
@@ -151,6 +162,9 @@ void MainWindow::on_loginButton_clicked()
 	case QLinPhoneCore::RegistrationCleared:
 	case QLinPhoneCore::RegistrationFailed:
 	{
+        // Unregister previous logins
+        m_sip->unregisterFromNetwork();
+
 		AuthenticationDialog dlg(this);
 		if (dlg.exec() == QDialog::Accepted) {
 	        m_identity = dlg.identity();
@@ -186,6 +200,15 @@ void MainWindow::on_openFileButton_clicked()
 	upmgr.startUpload(QUrl("https://www.linphone.org:444/upload.php"), fileName);
 }
 
+void MainWindow::updateChatText(int color, const QString &text)
+{
+    QTextCharFormat tf;
+    tf = ui->chatTextEdit->currentCharFormat();
+    tf.setForeground(QBrush(color));
+    ui->chatTextEdit->setCurrentCharFormat(tf);
+    ui->chatTextEdit->appendPlainText(text);
+}
+
 void MainWindow::on_sendButton_clicked()
 {
     QString to  = ui->toLineEdit->text();
@@ -193,6 +216,8 @@ void MainWindow::on_sendButton_clicked()
 
     if (to.isEmpty())
         return;
+
+    updateChatText(Qt::red, txt);
 
     m_sip->sendMessage(to, txt);
 }

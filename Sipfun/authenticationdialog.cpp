@@ -8,6 +8,7 @@ AuthenticationDialog::AuthenticationDialog(QWidget *parent) :
     m_password(QString())
 {
     ui->setupUi(this);
+    ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
 
     ui->userLineEdit->setText(m_username);
     ui->passwordLineEdit->setText(m_password);
@@ -39,4 +40,13 @@ void AuthenticationDialog::reject()
 {
     emit rejected();
     QDialog::reject();
+}
+
+void AuthenticationDialog::on_showPasswordCheckBox_toggled(bool checked)
+{
+    if (checked) {
+        ui->passwordLineEdit->setEchoMode(QLineEdit::Normal);
+    } else {
+        ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
+    }
 }

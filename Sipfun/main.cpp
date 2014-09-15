@@ -1,5 +1,8 @@
 #include <QtGui/QApplication>
+
+#ifdef Q_WS_QWS
 #include <QWSServer>
+#endif
 
 #include "MainWindow.h"
 #include "sipclient.h"
@@ -18,7 +21,7 @@ int main(int argc, char **argv)
 		QWSServer::setCursorVisible(false);
 	}
 #else
-	w.resize(800, 480);
+//	w.resize(800, 480);
 	w.show();
 #endif
 

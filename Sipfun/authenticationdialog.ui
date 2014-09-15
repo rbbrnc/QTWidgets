@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>667</width>
-    <height>114</height>
+    <width>683</width>
+    <height>140</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,29 +18,56 @@
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="text">
-        <string>user</string>
+        <string>User</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="userLineEdit"/>
+      <widget class="QLineEdit" name="userLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="text">
-        <string>password</string>
+        <string>Password</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="passwordLineEdit">
-       <property name="echoMode">
-        <enum>QLineEdit::PasswordEchoOnEdit</enum>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="showPasswordCheckBox">
+     <property name="text">
+      <string>Show Password</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

@@ -21,6 +21,9 @@ class MainWindow : public QMainWindow
 		explicit MainWindow(QWidget *parent = 0);
 		~MainWindow();
 
+    private:
+        void updateChatText(int color, const QString &text);
+
 	private slots:
 		void onUploadFinished(const QString &filename);
 		void onUploadProgress(qint64 percent);
@@ -34,7 +37,6 @@ class MainWindow : public QMainWindow
         void on_loginButton_clicked();
 
         void on_openFileButton_clicked();
-
         void on_sendButton_clicked();
 
 	public slots:
