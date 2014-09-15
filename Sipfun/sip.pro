@@ -1,6 +1,8 @@
 TARGET = qsip
 TEMPLATE = app
-QT += network
+
+QT += core gui network
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += silent
 
@@ -13,7 +15,7 @@ RCC_DIR = resources_$$QT_ARCH
 
 include ($$PWD/../QUpdateLabel/QUpdateLabel.pri)
 
-EXTRA_PATH  = $$PWD/../3rdparty
+#EXTRA_PATH  = $$PWD/../3rdparty
 
 INCLUDEPATH += $$COMMON_PATH
 
@@ -24,7 +26,8 @@ SOURCES += \
 	uploadmanager.cpp \
     authenticationdialog.cpp \
     QLinPhoneCore.cpp \
-	chatmessage.cpp
+	chatmessage.cpp \
+    chatclientform.cpp
 
 #	sipclient.cpp \
 
@@ -34,15 +37,15 @@ HEADERS += \
 	uploadmanager.h \
     authenticationdialog.h \
     QLinPhoneCore.h \
-	chatmessage.h
+	chatmessage.h \
+    chatclientform.h
 
 #	sipclient.h \
 
 FORMS += \
 	MainWindow.ui \
-    authenticationdialog.ui
-
-#RESOURCES += pixmaps.qrc
+    authenticationdialog.ui \
+    chatclientform.ui
 
 unix:contains(QT_ARCH, powerpc): {
 	DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
@@ -63,7 +66,6 @@ unix:contains(QT_ARCH, powerpc): {
 }
 
 unix:contains(QT_ARCH, i386): {
-
 	LINPHONE_CFLAGS = $$system(pkg-config linphone --cflags)
 	LINPHONE_LFLAGS = $$system(pkg-config linphone --libs)
 
@@ -71,4 +73,7 @@ unix:contains(QT_ARCH, i386): {
 	QMAKE_CXXFLAGS += $$LINPHONE_CFLAGS
 	LIBS += $$LINPHONE_LFLAGS
 }
+
+RESOURCES += \
+    resources.qrc
 
