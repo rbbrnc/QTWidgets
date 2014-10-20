@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>angle-down.svg</file>
+        <file>angle-up.svg</file>
+    </qresource>
+</RCC>
