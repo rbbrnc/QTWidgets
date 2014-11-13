@@ -62,6 +62,9 @@ void MainWindow::onChangePage(int pageIndex)
         ui->optionButton->setVisible(false);
     }
 
+    // Set Title
+    ui->tilteLabel->setText(bp->title());
+
     // On MainMenuPage don't show the backButton
     ui->backButton->setVisible(pageIndex != Page0);
     ui->stackedWidget->setCurrentIndex(pageIndex);

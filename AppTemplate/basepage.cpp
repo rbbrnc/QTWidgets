@@ -20,3 +20,13 @@ QMenu *BasePage::optionsMenu() const
 void BasePage::createOptionsMenu(QWidget *)
 {
 }
+
+void BasePage::setTitle(const QString &title)
+{
+    m_title = title;
+}
+
+QString BasePage::title() const
+{
+    return m_title;
+}

@@ -6,6 +6,7 @@ Form0::Form0(QWidget *parent) :
     ui(new Ui::Form0)
 {
     ui->setupUi(this);
+    setTitle("Form 0");
 }
 
 Form0::~Form0()

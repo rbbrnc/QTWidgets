@@ -21,12 +21,16 @@ class BasePage : public QWidget
 
         //virtual void saveData();
 
+        QString title() const;
+
     protected:
+        void setTitle(const QString &title);
+
         QMenu *m_optionsMenu;
+        QString m_title;
 
     signals:
         void changePage(int pageIndex);
-
 };
 
 #endif
