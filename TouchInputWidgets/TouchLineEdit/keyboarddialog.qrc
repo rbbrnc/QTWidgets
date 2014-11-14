@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>capslock_on.png</file>
-        <file>capslock_off.png</file>
-        <file>backspace.svg</file>
-    </qresource>
-</RCC>

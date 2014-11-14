@@ -13,8 +13,8 @@ enum {
 };
 
 TimeEditDialog::TimeEditDialog(const QTime &value, const QString &format,
-                                   const QString &text, QWidget *parent)
-    : QDialog(parent),
+                                   const QString &title, QWidget *parent)
+    : BaseDialog(parent),
       ui(new Ui::TimeEditDialog),
       m_value(value)
 {
@@ -48,10 +48,10 @@ TimeEditDialog::TimeEditDialog(const QTime &value, const QString &format,
         }
     }
 
-    if (text.isEmpty()) {
+    if (title.isEmpty()) {
         ui->titleLabel->setText("Set Time");
     } else {
-        ui->titleLabel->setText(text);
+        ui->titleLabel->setText(title);
     }
 
     ui->msgLabel->setText("");

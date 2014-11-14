@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>480</height>
+    <width>706</width>
+    <height>420</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -679,9 +679,8 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="icon">
-        <iconset resource="pixmaps.qrc">
-         <normaloff>:/capslock_off.png</normaloff>
-         <normalon>:/capslock_on.png</normalon>:/capslock_off.png</iconset>
+        <iconset resource="keyboarddialog.qrc">
+         <normaloff>:/KeyboardPixmaps/capslock_off.png</normaloff>:/KeyboardPixmaps/capslock_off.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -922,8 +921,8 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="icon">
-        <iconset resource="pixmaps.qrc">
-         <normaloff>:/backspace.svg</normaloff>:/backspace.svg</iconset>
+        <iconset resource="keyboarddialog.qrc">
+         <normaloff>:/KeyboardPixmaps/backspace.svg</normaloff>:/KeyboardPixmaps/backspace.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -1071,7 +1070,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="pixmaps.qrc"/>
+  <include location="keyboarddialog.qrc"/>
  </resources>
  <connections/>
 </ui>

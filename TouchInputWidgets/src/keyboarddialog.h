@@ -1,14 +1,14 @@
 #ifndef KEYBOARDDIALOG_H
 #define KEYBOARDDIALOG_H
 
-#include <QDialog>
 #include <QLineEdit>
+#include "basedialog.h"
 
 namespace Ui {
-class KeyboardDialog;
+    class KeyboardDialog;
 }
 
-class KeyboardDialog : public QDialog
+class KeyboardDialog : public BaseDialog
 {
     Q_OBJECT
 

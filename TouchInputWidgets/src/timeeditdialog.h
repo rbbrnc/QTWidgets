@@ -1,19 +1,19 @@
 #ifndef TIMEEDITDIALOG_H
 #define TIMEEDITDIALOG_H
 
-#include <QDialog>
 #include <QTime>
+#include "basedialog.h"
 
 namespace Ui {
 	class TimeEditDialog;
 }
 
-class TimeEditDialog : public QDialog
+class TimeEditDialog : public BaseDialog
 {
     Q_OBJECT
 
     public:
-        TimeEditDialog(const QTime &value, const QString &format = QString(), const QString &text = QString(), QWidget *parent = 0);
+        TimeEditDialog(const QTime &value, const QString &format = QString(), const QString &title = QString(), QWidget *parent = 0);
         ~TimeEditDialog();
 
         QVariant value() const;

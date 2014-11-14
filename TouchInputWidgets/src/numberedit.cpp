@@ -47,7 +47,7 @@ void NumberEdit::setRange(int min, int max)
 
 void NumberEdit::mousePressEvent(QMouseEvent *event)
 {
-    NumberEditDialog dlg(m_value, m_min, m_max, false);
+    NumberEditDialog dlg(m_value, m_min, m_max, false, windowTitle(), this->parentWidget());
     if (dlg.exec() == QDialog::Accepted) {
         setValue(dlg.value());
         emit valueChanged(m_value);

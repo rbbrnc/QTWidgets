@@ -1,0 +1,22 @@
+#bottomFrame, #topFrame { background-color: #C0C0C0; }
+
+QListWidget {
+    font-size: 32px;
+    background-color:#C0C0C0;
+    color:#808080;
+}
+QListWidget::item:selected {
+    border: 1px solid black;
+    color: black
+}
+
+/*QPushButton {border: 0px; background-color: #C0C0C0;}*/
+
+QLineEdit {
+    font-size: 24px;
+    border: 0px;
+    border-radius: 5px;
+    padding: 0 5px;
+    background: white;
+    selection-background-color: #0F79FF;
+}

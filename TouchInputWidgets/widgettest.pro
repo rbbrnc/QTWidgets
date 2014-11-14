@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = test
+TARGET = widgettest
 #DEPENDPATH += .
 INCLUDEPATH += .
 
@@ -12,9 +12,7 @@ UI_DIR = ui_$$QT_ARCH
 RCC_DIR = resources_$$QT_ARCH
 #----------------------------------
 
-include($$PWD/TouchNumberEdit/TouchNumberEdit.pri)
-include($$PWD/TouchDateTimeEdit/TouchDateTimeEdit.pri)
-include($$PWD/TouchLineEdit/TouchLineEdit.pri)
+include($$PWD/src/TouchWidgets.pri)
 
 HEADERS += mainwindow.h
 
@@ -24,14 +22,15 @@ SOURCES += \
 
 FORMS += mainwindow.ui
 
+QMAKE_CXXFLAGS += -Wall -W -g -ggdb
+
 unix:contains(QT_ARCH, powerpc): {
 #	DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
-#	INCLUDEPATH += /opt/eldk4.2/ppc_6xx/usr/include
-#	LIBS        += -L/opt/eldk4.2/ppc_6xx/usr/local -lts
 }
 
 unix:contains(QT_ARCH, i386): {
 #	DEFINES +=
-	QMAKE_CXXFLAGS += -Wall -W -Wunreachable-code -g -ggdb
+	QMAKE_CXXFLAGS += -Wunreachable-code
 }
 
+OTHER_FILES += style.qss

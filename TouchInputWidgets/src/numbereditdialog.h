@@ -1,13 +1,13 @@
 #ifndef NUMBEREDITDIALOG_H
 #define NUMBEREDITDIALOG_H
 
-#include <QDialog>
+#include "basedialog.h"
 
 namespace Ui {
-class NumberEditDialog;
+	class NumberEditDialog;
 }
 
-class NumberEditDialog : public QDialog
+class NumberEditDialog : public BaseDialog
 {
     Q_OBJECT
 
@@ -15,7 +15,7 @@ class NumberEditDialog : public QDialog
         explicit NumberEditDialog(double value,
                                   double min, double max,
                                   bool decimal,
-                                  const QString &text = QString(),
+                                  const QString &title = QString(),
                                   QWidget *parent = 0);
         ~NumberEditDialog();
 

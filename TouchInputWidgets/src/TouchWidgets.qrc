@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>GuiPixmaps/angle-down.svg</file>
+        <file>GuiPixmaps/angle-up.svg</file>
+        <file>GuiPixmaps/close.svg</file>
+        <file>GuiPixmaps/check.svg</file>
+    </qresource>
+</RCC>

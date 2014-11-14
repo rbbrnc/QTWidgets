@@ -41,11 +41,20 @@ static const QChar lettersLayout[SOFTKEYS] = {
     'Z', 'X', 'C', 'V', 'B', 'N', 'M', ' '
 };
 
+/*
 #define DARK_BUTTONS_STYLE \
     "#KeyboardDialog { background-color: rgba(10,10,10,255);} \
     QPushButton {border: 0px; border-radius: 5px; margin: 1px; color: white; background-color:rgba(66,66,66,255);} \
     #btnDel, #btnShift, #btnMod, #btnEnter, #btnClose {background-color:rgba(35,35,35,255);}\
     #lineEdit {border: 0px; border-radius: 10px; margin: 1px;}"
+*/
+
+#define DARK_BUTTONS_STYLE \
+    "#KeyboardDialog { background-color: #C0C0C0;} \
+    QPushButton {border: 0px; border-radius: 5px; margin: 1px; color: white; background-color:rgba(66,66,66,255);} \
+    #btnDel, #btnShift, #btnMod, #btnEnter, #btnClose {background-color:rgba(35,35,35,255);}\
+    #lineEdit {border: 0px; border-radius: 10px; margin: 1px;}"
+
 
 #define SHIFT_ON_STYLE  "background-color:rgba(195,195,195,255); color: black"
 #define SHIFT_OFF_STYLE "background-color:rgba(35,35,35,255); color: white"
@@ -57,13 +66,13 @@ static const QChar lettersLayout[SOFTKEYS] = {
 KeyboardDialog::KeyboardDialog(const QString &text,
                                enum QLineEdit::EchoMode echoMode,
                                QWidget *parent) :
-    QDialog(parent),
+    BaseDialog(parent),
     ui(new Ui::KeyboardDialog),
     m_modNumbers(false),
     m_shift(false)
 {
     ui->setupUi(this);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    //setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
 
     this->setStyleSheet(DARK_BUTTONS_STYLE);
 

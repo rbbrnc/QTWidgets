@@ -5,9 +5,9 @@
 
 NumberEditDialog::NumberEditDialog(double value, double min, double max,
                                    bool decimal,
-                                   const QString &text,
+                                   const QString &title,
                                    QWidget *parent) :
-    QDialog(parent),
+    BaseDialog(parent),
     ui(new Ui::NumberEditDialog),
     m_value(value),
     m_min(min),
@@ -17,10 +17,10 @@ NumberEditDialog::NumberEditDialog(double value, double min, double max,
     ui->msgLabel->setText("");
     ui->msgLabel->setStyleSheet("color: red;");
 
-    if (text.isEmpty()) {
+    if (title.isEmpty()) {
         ui->titleLabel->setText(QString("Set Value Range:[%1 - %2]").arg(min).arg(max));
     } else {
-        ui->titleLabel->setText(QString("Set %1 Range:[%2 - %3]").arg(text).arg(min).arg(max));
+        ui->titleLabel->setText(QString("Set %1 Range:[%2 - %3]").arg(title).arg(min).arg(max));
     }
 
     double val = qAbs(m_value);
@@ -42,7 +42,6 @@ NumberEditDialog::NumberEditDialog(double value, double min, double max,
     ui->tens->setText(QString::number(m_tens));
     ui->units->setText(QString::number(m_units));
     ui->tenths->setText(QString::number(m_tenths));
-
 }
 
 NumberEditDialog::~NumberEditDialog()
