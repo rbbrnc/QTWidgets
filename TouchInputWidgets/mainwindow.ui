@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>182</height>
+    <height>210</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,18 +23,15 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QGridLayout" name="gridlayout">
-      <item row="1" column="1">
-       <widget class="NumberEdit" name="numIntEdit"/>
-      </item>
-      <item row="2" column="1">
-       <widget class="DoubleEdit" name="numDoubleEdit"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Int</string>
+         <string>Text (Password)</string>
         </property>
        </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="TimeEdit" name="timeEdit"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_2">
@@ -43,10 +40,26 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="TouchLineEdit" name="passwordEdit">
-        <property name="echoMode">
-         <enum>QLineEdit::Password</enum>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Int</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="NumberEdit" name="numIntEdit"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="TouchLineEdit" name="textNormalEdit"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="DoubleEdit" name="numDoubleEdit"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Time</string>
         </property>
        </widget>
       </item>
@@ -57,12 +70,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="TimeEdit" name="timeEdit"/>
-      </item>
-      <item row="3" column="1">
-       <widget class="TouchLineEdit" name="textNormalEdit"/>
-      </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
@@ -70,22 +77,38 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Time</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Text (Password)</string>
-        </property>
-       </widget>
-      </item>
       <item row="5" column="1">
        <widget class="TouchListEdit" name="listEdit"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="TouchLineEdit" name="passwordEdit">
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Switch</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="UiSwitch" name="switchButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -117,6 +140,11 @@
    <class>TouchListEdit</class>
    <extends>QLineEdit</extends>
    <header>touchlistedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>UiSwitch</class>
+   <extends>QPushButton</extends>
+   <header>uiswitch.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
