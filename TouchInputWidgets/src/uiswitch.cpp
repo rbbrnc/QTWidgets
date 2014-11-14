@@ -150,17 +150,32 @@ QRectF UiSwitch::knobRect() const
 {
     qreal kw = m_rect.height();  // Knob width
 
+    int a = 4;
+    QRectF kRect(1, a/2, kw - a, kw - a);
+
+    // move the rect to the current position
+    qreal pos = (m_rect.width() - kw - 1) * static_cast<qreal>(m_position) / 100.0;
+    pos = qMax(0.0, qMin(pos, m_rect.right() /*- kw*/ - 1));
+    kRect.moveLeft(pos);
+
+    return kRect;
+}
+#if 0
+// Calculates the knob bounding box
+QRectF UiSwitch::knobRect() const
+{
+    qreal kw = m_rect.height();  // Knob width
+
     QRectF kRect(0, 0, kw, kw);
-    //QRectF kRect(4, 4, kw - 2, kw - 2);
 
 	// move the rect to the current position
-	qreal pos = (m_rect.width() - kw - 1) * static_cast<qreal>(m_position) / 100.0;
-	pos = qMax(0.0, qMin(pos, m_rect.right() - kw));
+    qreal pos = (m_rect.width() - kw - 1) * static_cast<qreal>(m_position) / 100.0;
+    pos = qMax(0.0, qMin(pos, m_rect.right() - kw));
 	kRect.moveLeft(pos);
 
 	return kRect;
 }
-
+#endif
 // The knob will be dragged to the moved position.
 void UiSwitch::mouseMoveEvent(QMouseEvent *event)
 {
