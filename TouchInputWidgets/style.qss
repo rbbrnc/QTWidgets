@@ -1,4 +1,5 @@
 #bottomFrame, #topFrame { background-color: #C0C0C0; }
+QMainWindow { background-color:#B0B0B0;}
 
 QListWidget {
     font-size: 32px;

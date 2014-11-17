@@ -33,7 +33,7 @@ class UiSwitch : public QAbstractButton
 
 		bool hitButton(const QPoint &pos) const;
 
-		inline void drawKnob(QPainter *painter, bool on);
+        inline void drawKnob(QPainter *painter);
 		inline void drawSlider(QPainter *painter, bool on);
 		inline void drawText(QPainter *painter, bool on);
 
@@ -41,7 +41,7 @@ class UiSwitch : public QAbstractButton
 		void updateSwitchPosition(bool checked);
 
 	private:
-		QRectF m_rect;
+        QRectF m_rect;  // Widget Bounding Box
 
 		int m_textHeight;
 		int m_textY;

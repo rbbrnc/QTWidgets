@@ -57,7 +57,7 @@ void UiSwitch::paintEvent(QPaintEvent *)
 	if (m_textLabels) {
 		drawText(&painter, isChecked());
 	}
-	drawKnob(&painter, isChecked());
+    drawKnob(&painter);
 }
 
 // Render On/Off text
@@ -85,97 +85,81 @@ inline void UiSwitch::drawText(QPainter *painter, bool on)
 }
 
 // Render knob
-// Higlight when dragging slider
-inline void UiSwitch::drawKnob(QPainter *painter, bool on)
+inline void UiSwitch::drawKnob(QPainter *painter)
 {
-    if (on) {
-        //painter->setPen(QPen(Qt::white, KNOB_BORDER_SIZE));
-        painter->setPen(QPen(m_offColor, KNOB_BORDER_SIZE));
-	} else {
-		painter->setPen(QPen(m_offColor, KNOB_BORDER_SIZE));
-	}
-
     if (m_dragInProgress) {
+        // Higlight when dragging knob
         painter->setPen(QPen(m_onColor, KNOB_BORDER_SIZE));
+    } else {
+        painter->setPen(QPen(m_offColor, KNOB_BORDER_SIZE));
     }
 
 	painter->setBrush(Qt::white);
-	painter->drawEllipse(knobRect());
+    painter->drawEllipse(knobRect());
 }
 
 // Render Slider
 //
 // The slider is rendered with a 'PainterPath' in 4 step:
 //
-// 1. draw left half-circle from [knobWidth/2, 0] to [knobWidth/2, height]
-// 2. draw a line from the end of half-circle to [(width - knobWidth/2), height]
-// 3. draw right half-circle from the end point of the previous line to
-//    [(width - knobWidth/2), 0]
-// 4. draw a line from the end point of the half-circle to the starting point of (1)
+// 1. draw left half-circle from A to B
+// 2. draw a line from the end of half-circle B to C
+// 3. draw right half-circle from C to D
+// 4. draw a line from the end point of the half-circle D to A
 //
 // width, heigh are the dimension of the widget bounding box.
 // knobWidth = knobHeight = heigth (aka the knob has the same height of the bounding box.)
 //
-#define KBS 0
+//  A__________D      oxy = offset from widget bounding box (left side, top side)
+//  (__________)      w,h = widget bounding box dimension
+//  B          C      d = circle diameter = (h - 2*off)
+//
+// Half-circle (AB) square bounding box = [oxy, oxy, d, d]
+// Half-circle (CD) square bounding box = [w-h, oxy, d, d]
+#define OXY 1.0
+
 inline void UiSwitch::drawSlider(QPainter *painter, bool on)
 {
-    qreal kw = m_rect.height(); // Knob Width = Knob Height = Widget Height
+    qreal d  = m_rect.height() - (2 * OXY);
 
-    QRectF lBox(0, KBS, kw, kw - KBS);                   // Left half-circle bounding box
-    QRectF rBox(m_rect.width() - kw, KBS, kw, kw - KBS); // Right half-circle bounding box
+    // Right half-circle bounding box
+    QRectF rBox(m_rect.width() - m_rect.height(), OXY, d, d);
+
+    // Left half-circle bounding box
+    QRectF lBox(OXY, OXY, d, d);
 
 	QPainterPath path;
 
-    path.moveTo(kw/2, KBS);                 // Start point.
-	path.arcTo(lBox, 90, 180);	            // [1] Left half-circle
-	path.lineTo(m_rect.width() - kw/2, kw); // [2] Line
-	path.arcTo(rBox, -90, 180);             // [3] Right half-circle
-    path.lineTo(kw/2, KBS);                 // [4] Line
+    path.moveTo(d + OXY, OXY);      // Start point A.
+    path.arcTo(lBox, 90, 180);	    // [1] Left half-circle
+//  path.lineTo(rBox.x(), d + OXY); // [2] Line from B to C
+    path.arcTo(rBox, -90, 180);     // [3] Right half-circle
+    path.lineTo(d + OXY, OXY);      // [4] Line from D to A
 
 	if (on) {
         painter->setBrush(QBrush(m_onColor));
-        //painter->setPen(QPen(m_onColor, KNOB_BORDER_SIZE));
-        painter->setPen(QPen(m_offColor, KNOB_BORDER_SIZE));
-        //painter->setPen(QPen(Qt::transparent, 0));
-
 	} else {
 		painter->setBrush(QBrush(Qt::white));
-        painter->setPen(QPen(m_offColor, KNOB_BORDER_SIZE));
 	}
+
+    painter->setPen(QPen(m_offColor, KNOB_BORDER_SIZE));
 	painter->drawPath(path);
 }
 
-// Calculates the knob bounding box
+// Calculates the knob bounding box (square)
+#define KOFF 2.0    // Knob offset from widget border
 QRectF UiSwitch::knobRect() const
 {
-    qreal kw = m_rect.height();  // Knob width
+    qreal kd = m_rect.height() - (2 * KOFF); // Knob diameter
 
-    int a = 4;
-    QRectF kRect(1, a/2, kw - a, kw - a);
-
-    // move the rect to the current position
-    qreal pos = (m_rect.width() - kw - 1) * static_cast<qreal>(m_position) / 100.0;
-    pos = qMax(0.0, qMin(pos, m_rect.right() /*- kw*/ - 1));
+    QRectF kRect(KOFF, KOFF, kd, kd);
+    qreal pos = (m_rect.width() - kd) * static_cast<qreal>(m_position) / 100.0;
+    pos = qMax(KOFF, qMin(pos, m_rect.right() - kd - KOFF));
     kRect.moveLeft(pos);
 
     return kRect;
 }
-#if 0
-// Calculates the knob bounding box
-QRectF UiSwitch::knobRect() const
-{
-    qreal kw = m_rect.height();  // Knob width
 
-    QRectF kRect(0, 0, kw, kw);
-
-	// move the rect to the current position
-    qreal pos = (m_rect.width() - kw - 1) * static_cast<qreal>(m_position) / 100.0;
-    pos = qMax(0.0, qMin(pos, m_rect.right() - kw));
-	kRect.moveLeft(pos);
-
-	return kRect;
-}
-#endif
 // The knob will be dragged to the moved position.
 void UiSwitch::mouseMoveEvent(QMouseEvent *event)
 {
@@ -201,7 +185,7 @@ void UiSwitch::mouseMoveEvent(QMouseEvent *event)
 		setChecked(false);
 	}
 
-	update();
+    update();
 }
 
 void UiSwitch::mousePressEvent(QMouseEvent *event)
