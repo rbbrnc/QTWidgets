@@ -110,6 +110,11 @@ QString KeyboardDialog::text() const
     return ui->lineEdit->text();
 }
 
+void KeyboardDialog::setInputMask(const QString &inputMask)
+{
+	ui->lineEdit->setInputMask(inputMask);
+}
+
 void KeyboardDialog::buttonClicked()
 {
     QWidget *w = qobject_cast<QWidget *>(sender());

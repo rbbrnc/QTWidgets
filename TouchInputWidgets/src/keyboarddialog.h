@@ -19,6 +19,7 @@ class KeyboardDialog : public BaseDialog
         ~KeyboardDialog();
 
         QString text() const;
+		void setInputMask(const QString &inputMask);
 
     private:
         void changeLayout(bool modNumbers, bool shift);

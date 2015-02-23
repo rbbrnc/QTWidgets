@@ -10,6 +10,7 @@ TouchLineEdit::TouchLineEdit(QWidget *parent) :
 void TouchLineEdit::mousePressEvent(QMouseEvent *event)
 {
     KeyboardDialog dlg(text());
+	dlg.setInputMask(inputMask());
     if (QDialog::Accepted == dlg.exec()) {
         setText(dlg.text());
     }
