@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="windowTitle">
+   <string>KTEST</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#comErrorLabel, #ds0ErrorLabel, #ds1ErrorLabel, #ds2ErrorLabel, #ds3ErrorLabel, #plt1ErrorLabel , #plt2ErrorLabel, #plt3ErrorLabel, #fanSpeedErrorLabel, #refrigeratorErrorLabel, #shtError, #waterErrorLabel, #filterErrorLabel {border: 0px; border-radius: 5px; margin: 1px; background-color: red; color: white;}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="text">
+       <string>Normal</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
