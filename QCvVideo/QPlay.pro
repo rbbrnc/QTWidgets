@@ -3,11 +3,15 @@ TARGET = QPlay
 INCLUDEPATH += .
 
 #QMAKE_CXXFLAGS += -g -ggdb
+QMAKE_CXXFLAGS += -ffunction-sections -fdata-sections
+QMAKE_LFLAGS   += -Wl,--gc-sections,--as-needed
 
 #-- Check QT version
 message(Qt version: $$[QT_VERSION])
 greaterThan(QT_MAJOR_VERSION, 4) {
 	QT += widgets
+	CONFIG += c++11
+	DEFINES += QT_USE_FAST_CONCATENATION QT_USE_FAST_OPERATOR_PLUS
 }
 
 SLIDERPATH=$$PWD/../Slider
