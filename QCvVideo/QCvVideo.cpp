@@ -391,7 +391,12 @@ bool QCvVideo::saveCurrentFrame(const QString &fileName)
 	// point back to saved frame!
 	m_capture->set(CV_CAP_PROP_POS_FRAMES, pos);
 
-	return cv::imwrite(fileName.toLatin1().constData(), frameToSave);
+	// Set PNG compression level 0 = no compression ... 9 = max compression.
+	std::vector<int> compression_params;
+    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(0);
+
+	return cv::imwrite(fileName.toLatin1().constData(), frameToSave, compression_params);
 }
 
 void QCvVideo::setCutList(QHash<int, int> cutList)
